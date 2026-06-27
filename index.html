@@ -3,192 +3,300 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>20260626_SFire</title>
+  <title>20260626_SFire - Page Viewer</title>
   <style>
     :root {
       color-scheme: light;
-      --bg: #f4efe6;
-      --bg-soft: #fcfaf6;
-      --surface: rgba(255, 255, 255, 0.88);
-      --surface-strong: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --accent: #0f766e;
-      --accent-soft: rgba(15, 118, 110, 0.12);
-      --border: rgba(31, 41, 55, 0.12);
-      --shadow: 0 24px 60px rgba(31, 41, 55, 0.12);
+      --bg: #0f172a;
+      --bg-soft: #111827;
+      --surface: rgba(255, 255, 255, 0.08);
+      --surface-strong: rgba(255, 255, 255, 0.96);
+      --text: #e5eefb;
+      --muted: rgba(229, 238, 251, 0.72);
+      --accent: #38bdf8;
+      --accent-strong: #0ea5e9;
+      --border: rgba(255, 255, 255, 0.14);
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html {
-      scroll-behavior: smooth;
+    html, body {
+      margin: 0;
+      min-height: 100%;
     }
 
     body {
-      margin: 0;
       font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 34%),
-        radial-gradient(circle at top right, rgba(217, 119, 6, 0.12), transparent 30%),
-        linear-gradient(180deg, var(--bg), var(--bg-soft) 40%, #ffffff 100%);
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.24), transparent 28%),
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.16), transparent 24%),
+        linear-gradient(180deg, var(--bg), var(--bg-soft));
     }
 
-    .wrap {
-      width: min(1200px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 24px 0 56px;
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    header,
+    footer {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
     }
 
     header {
-      position: sticky;
-      top: 12px;
-      z-index: 20;
-      backdrop-filter: blur(16px);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 20px 22px;
-      box-shadow: var(--shadow);
-      margin-bottom: 22px;
-    }
-
-    .title-row {
+      padding: 18px 20px;
       display: flex;
       flex-wrap: wrap;
-      gap: 12px 18px;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
+      gap: 14px;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+      font-size: clamp(1.2rem, 2.2vw, 1.9rem);
       letter-spacing: -0.03em;
     }
 
-    .subtitle {
-      margin: 6px 0 0;
+    .meta {
+      margin-top: 6px;
       color: var(--muted);
-      line-height: 1.5;
-      max-width: 70ch;
+      font-size: 0.95rem;
     }
 
-    nav {
+    .toolbar {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 16px;
+      align-items: center;
+      gap: 4px;
     }
 
-    nav a {
-      color: var(--text);
-      text-decoration: none;
+    button {
+      appearance: none;
       border: 1px solid var(--border);
-      background: var(--surface-strong);
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--text);
       border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 0.95rem;
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      padding: 5px 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
     }
 
-    nav a:hover {
+    button:hover:not(:disabled) {
       transform: translateY(-1px);
-      border-color: rgba(15, 118, 110, 0.35);
-      background: var(--accent-soft);
+      border-color: rgba(56, 189, 248, 0.65);
+      background: rgba(56, 189, 248, 0.18);
     }
 
-    .section-label {
-      margin: 30px 0 14px;
-      padding: 12px 16px;
-      border-left: 4px solid var(--accent);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.72);
-      color: var(--text);
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .page-indicator {
+      min-width: 70px;
+      text-align: center;
       font-weight: 700;
-      box-shadow: 0 10px 24px rgba(31, 41, 55, 0.06);
+      color: #ffffff;
+      font-size: 0.82rem;
     }
 
-    .pages {
+    main {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 18px;
+      place-items: center;
+      min-height: 0;
     }
 
-    figure {
-      margin: 0;
-      background: rgba(255, 255, 255, 0.92);
+    .viewer {
+      width: min(100%, 1100px);
+      height: calc(100vh - 40px);
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto auto;
+      gap: 14px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 6px 8px;
       border: 1px solid var(--border);
-      border-radius: 22px;
-      overflow: hidden;
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      border-radius: 14px;
       box-shadow: var(--shadow);
     }
 
-    figure img {
+    .toc {
+      margin-left: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 4px 10px;
+      padding: 0 2px 2px;
+      font-size: 0.6rem;
+      line-height: 1.25;
+      color: rgba(229, 238, 251, 0.42);
+      opacity: 0.7;
+    }
+
+    .toc a {
+      color: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .toc a:hover {
+      color: rgba(229, 238, 251, 0.7);
+    }
+
+    .stage {
+      position: relative;
+      min-height: 0;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.42);
+      box-shadow: var(--shadow);
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 22%, rgba(0, 0, 0, 0.14));
+      z-index: 1;
+    }
+
+    img {
       display: block;
       width: 100%;
-      height: auto;
+      height: 100%;
+      max-height: none;
+      object-fit: contain;
+      background: #fff;
+      transition: opacity 0.18s ease, transform 0.18s ease;
     }
 
-    figcaption {
+    .fade-out {
+      opacity: 0;
+      transform: scale(0.992);
+    }
+
+    .stage-nav {
+      position: absolute;
+      inset: 0;
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      padding: 12px 16px;
-      font-size: 0.95rem;
-      color: var(--muted);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.95));
+      align-items: center;
+      z-index: 2;
+      pointer-events: none;
     }
 
-    .page-name {
-      color: var(--text);
-      font-weight: 600;
+    .nav-hit {
+      width: 22%;
+      height: 100%;
+      pointer-events: auto;
+      border: 0;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.24), transparent);
+      border-radius: 0;
+      color: transparent;
     }
 
-    footer {
-      margin-top: 24px;
-      color: var(--muted);
-      font-size: 0.92rem;
-      text-align: center;
+    .nav-hit.next {
+      background: linear-gradient(270deg, rgba(15, 23, 42, 0.24), transparent);
+    }
+
+    .nav-hit:hover {
+      background-color: rgba(56, 189, 248, 0.12);
     }
 
     @media (max-width: 720px) {
-      .wrap {
-        width: min(100% - 20px, 1200px);
-        padding-top: 10px;
+      .shell {
+        padding: 12px;
+        gap: 12px;
       }
 
       header {
-        top: 8px;
-        padding: 16px;
+        padding: 14px;
         border-radius: 18px;
       }
 
-      .pages {
-        grid-template-columns: 1fr;
+      .toolbar {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .page-indicator {
+        min-width: 92px;
+      }
+
+      img {
+        height: 100%;
+      }
+
+      .nav-hit {
+        width: 28%;
       }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="title-row">
-        
+  <div class="shell">
+    <main>
+      <div class="viewer">
+        <div class="stage" id="stage">
+          <img id="pageImage" alt="Page 1" src="Media/page-001.png" />
+          <div class="stage-nav" aria-hidden="true">
+            <button class="nav-hit prev" id="stagePrev" type="button" aria-label="이전 페이지"></button>
+            <button class="nav-hit next" id="stageNext" type="button" aria-label="다음 페이지"></button>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="prevBtn" type="button" aria-label="이전 페이지">이전</button>
+          <div id="pageIndicator" class="page-indicator">1 / 45</div>
+          <button id="nextBtn" type="button" aria-label="다음 페이지">다음</button>
+        </div>
+
+        <div id="toc" class="toc" aria-label="목차"></div>
+
       </div>
-      <nav id="nav"></nav>
-    </header>
-
-    <div id="content"></div>
-
-    <footer>이미지는 Media/page-001.png 부터 Media/page-045.png 까지 순차적으로 표시됩니다.</footer>
+    </main>
   </div>
 
   <script>
-    const sections = [
+    const totalPages = 45;
+    const state = { page: 1 };
+
+    const pageImage = document.getElementById("pageImage");
+    const pageIndicator = document.getElementById("pageIndicator");
+    const toc = document.getElementById("toc");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const stagePrev = document.getElementById("stagePrev");
+    const stageNext = document.getElementById("stageNext");
+    const stage = document.getElementById("stage");
+
+    const pad = (value) => String(value).padStart(3, "0");
+    const label = (value) => String(value).padStart(2, "0");
+
+    const tocItems = [
       { page: 1, label: "Cover" },
       { page: 11, label: "Copilot Chat" },
       { page: 17, label: "Hands-on Chat" },
@@ -197,38 +305,102 @@
       { page: 29, label: "Hands-on PowerPoint" },
     ];
 
-    const totalPages = 45;
-    const nav = document.getElementById("nav");
-    const content = document.getElementById("content");
-
-    sections.forEach((section) => {
+    tocItems.forEach((item, index) => {
       const link = document.createElement("a");
-      link.href = `#page-${String(section.page).padStart(3, "0")}`;
-      link.textContent = `${String(section.page).padStart(2, "0")} ${section.label}`;
-      nav.appendChild(link);
+      link.href = `#page-${pad(item.page)}`;
+      link.textContent = item.label;
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        renderPage(item.page);
+      });
+      toc.appendChild(link);
+
+      if (index < tocItems.length - 1) {
+        const separator = document.createElement("span");
+        separator.textContent = "·";
+        toc.appendChild(separator);
+      }
     });
 
-    for (let page = 1; page <= totalPages; page += 1) {
-      const section = sections.find((item) => item.page === page);
-      if (section) {
-        const label = document.createElement("div");
-        label.className = "section-label";
-        label.textContent = section.label;
-        content.appendChild(label);
+    function renderPage(page) {
+      state.page = page;
+      const fileName = `Media/page-${pad(page)}.png`;
+
+      pageImage.classList.add("fade-out");
+      window.setTimeout(() => {
+        pageImage.src = fileName;
+        pageImage.alt = `Page ${page}`;
+        pageIndicator.textContent = `${page} / ${totalPages}`;
+        prevBtn.disabled = page === 1;
+        stagePrev.disabled = page === 1;
+        nextBtn.disabled = page === totalPages;
+        stageNext.disabled = page === totalPages;
+        pageImage.classList.remove("fade-out");
+        location.hash = `page-${pad(page)}`;
+      }, 120);
+    }
+
+    function goPrev() {
+      if (state.page > 1) {
+        renderPage(state.page - 1);
+      }
+    }
+
+    function goNext() {
+      if (state.page < totalPages) {
+        renderPage(state.page + 1);
+      }
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    nextBtn.addEventListener("click", goNext);
+    stagePrev.addEventListener("click", goPrev);
+    stageNext.addEventListener("click", goNext);
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goPrev();
+      }
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goNext();
+      }
+    });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    stage.addEventListener("touchstart", (event) => {
+      const touch = event.changedTouches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+
+    stage.addEventListener("touchend", (event) => {
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
+
+      if (Math.abs(deltaX) < 40 || Math.abs(deltaX) < Math.abs(deltaY)) {
+        return;
       }
 
-      const figure = document.createElement("figure");
-      figure.id = `page-${String(page).padStart(3, "0")}`;
+      if (deltaX < 0) {
+        goNext();
+      } else {
+        goPrev();
+      }
+    }, { passive: true });
 
-      const img = document.createElement("img");
-      img.src = `Media/page-${String(page).padStart(3, "0")}.png`;
-      img.alt = `Page ${page}`;
-      img.loading = "lazy";
+    const initialPage = (() => {
+      const hash = location.hash.match(/page-(\d{3})/);
+      if (!hash) return 1;
+      const parsed = Number(hash[1]);
+      return Number.isFinite(parsed) && parsed >= 1 && parsed <= totalPages ? parsed : 1;
+    })();
 
-      figure.appendChild(img);
-
-      content.appendChild(figure);
-    }
+    renderPage(initialPage);
   </script>
 </body>
 </html>

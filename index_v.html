@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>20260626_SFire</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4efe6;
+      --bg-soft: #fcfaf6;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-strong: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --accent-soft: rgba(15, 118, 110, 0.12);
+      --border: rgba(31, 41, 55, 0.12);
+      --shadow: 0 24px 60px rgba(31, 41, 55, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 34%),
+        radial-gradient(circle at top right, rgba(217, 119, 6, 0.12), transparent 30%),
+        linear-gradient(180deg, var(--bg), var(--bg-soft) 40%, #ffffff 100%);
+    }
+
+    .wrap {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    header {
+      position: sticky;
+      top: 12px;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .title-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 70ch;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      background: var(--surface-strong);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    nav a:hover {
+      transform: translateY(-1px);
+      border-color: rgba(15, 118, 110, 0.35);
+      background: var(--accent-soft);
+    }
+
+    .section-label {
+      margin: 30px 0 14px;
+      padding: 12px 16px;
+      border-left: 4px solid var(--accent);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--text);
+      font-weight: 700;
+      box-shadow: 0 10px 24px rgba(31, 41, 55, 0.06);
+    }
+
+    .pages {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    figure {
+      margin: 0;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.95));
+    }
+
+    .page-name {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      .wrap {
+        width: min(100% - 20px, 1200px);
+        padding-top: 10px;
+      }
+
+      header {
+        top: 8px;
+        padding: 16px;
+        border-radius: 18px;
+      }
+
+      .pages {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title-row">
+        
+      </div>
+      <nav id="nav"></nav>
+    </header>
+
+    <div id="content"></div>
+
+    <footer>이미지는 Media/page-001.png 부터 Media/page-045.png 까지 순차적으로 표시됩니다.</footer>
+  </div>
+
+  <script>
+    const sections = [
+      { page: 1, label: "Cover" },
+      { page: 11, label: "Copilot Chat" },
+      { page: 17, label: "Hands-on Chat" },
+      { page: 23, label: "Hands-on Word" },
+      { page: 26, label: "Hands-on Excel" },
+      { page: 29, label: "Hands-on PowerPoint" },
+    ];
+
+    const totalPages = 45;
+    const nav = document.getElementById("nav");
+    const content = document.getElementById("content");
+
+    sections.forEach((section) => {
+      const link = document.createElement("a");
+      link.href = `#page-${String(section.page).padStart(3, "0")}`;
+      link.textContent = `${String(section.page).padStart(2, "0")} ${section.label}`;
+      nav.appendChild(link);
+    });
+
+    for (let page = 1; page <= totalPages; page += 1) {
+      const section = sections.find((item) => item.page === page);
+      if (section) {
+        const label = document.createElement("div");
+        label.className = "section-label";
+        label.textContent = section.label;
+        content.appendChild(label);
+      }
+
+      const figure = document.createElement("figure");
+      figure.id = `page-${String(page).padStart(3, "0")}`;
+
+      const img = document.createElement("img");
+      img.src = `Media/page-${String(page).padStart(3, "0")}.png`;
+      img.alt = `Page ${page}`;
+      img.loading = "lazy";
+
+      figure.appendChild(img);
+
+      content.appendChild(figure);
+    }
+  </script>
+</body>
+</html>
