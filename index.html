@@ -7,14 +7,11 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #0f172a;
-      --bg-soft: #111827;
-      --surface: rgba(255, 255, 255, 0.08);
-      --surface-strong: rgba(255, 255, 255, 0.96);
+      --bg: #0b1220;
+      --surface: rgba(19, 28, 48, 0.58);
+      --surface-soft: rgba(255, 255, 255, 0.08);
       --text: #e5eefb;
       --muted: rgba(229, 238, 251, 0.72);
-      --accent: #38bdf8;
-      --accent-strong: #0ea5e9;
       --border: rgba(255, 255, 255, 0.14);
       --shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
     }
@@ -25,133 +22,139 @@
 
     html, body {
       margin: 0;
-      min-height: 100%;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
 
     body {
       font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.24), transparent 28%),
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 30%),
         radial-gradient(circle at top right, rgba(14, 165, 233, 0.16), transparent 24%),
-        linear-gradient(180deg, var(--bg), var(--bg-soft));
+        linear-gradient(180deg, #0b1220, #0f172a 40%, #111827 100%);
     }
 
-    .shell {
-      min-height: 100vh;
+    .stage {
+      position: fixed;
+      inset: 0;
       display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 18px;
-      padding: 20px;
+      place-items: stretch;
+      background: rgba(2, 6, 23, 0.18);
     }
 
-    header,
-    footer {
-      border: 1px solid var(--border);
-      background: var(--surface);
-      backdrop-filter: blur(18px);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
+    .page-image {
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      background: rgba(255, 255, 255, 0.02);
+      transition: opacity 0.18s ease, transform 0.18s ease;
     }
 
-    header {
-      padding: 18px 20px;
+    .fade-out {
+      opacity: 0;
+      transform: scale(0.992);
+    }
+
+    .nav-hit {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 22%;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .nav-hit.prev {
+      left: 0;
+    }
+
+    .nav-hit.next {
+      right: 0;
+    }
+
+    .nav-hit.prev:hover {
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.18), transparent);
+    }
+
+    .nav-hit.next:hover {
+      background: linear-gradient(270deg, rgba(15, 23, 42, 0.18), transparent);
+    }
+
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(1.2rem, 2.2vw, 1.9rem);
-      letter-spacing: -0.03em;
-    }
-
-    .meta {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
       align-items: center;
       gap: 4px;
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      z-index: 3;
+      max-width: calc(100vw - 24px);
+      overflow: hidden;
     }
 
     button {
       appearance: none;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.12);
       color: var(--text);
       border-radius: 999px;
-      padding: 5px 8px;
-      font-size: 0.8rem;
+      padding: 5px 9px;
+      font-size: 0.78rem;
       cursor: pointer;
-      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+      transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+      white-space: nowrap;
     }
 
     button:hover:not(:disabled) {
       transform: translateY(-1px);
-      border-color: rgba(56, 189, 248, 0.65);
-      background: rgba(56, 189, 248, 0.18);
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.24);
     }
 
     button:disabled {
-      opacity: 0.45;
+      opacity: 0.35;
       cursor: not-allowed;
     }
 
-    .page-indicator {
-      min-width: 70px;
+    .indicator {
+      min-width: 56px;
       text-align: center;
+      font-size: 0.8rem;
       font-weight: 700;
       color: #ffffff;
-      font-size: 0.82rem;
-    }
-
-    main {
-      display: grid;
-      place-items: center;
-      min-height: 0;
-    }
-
-    .viewer {
-      width: min(100%, 1100px);
-      height: calc(100vh - 40px);
-      display: grid;
-      grid-template-rows: minmax(0, 1fr) auto auto;
-      gap: 14px;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 6px 8px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      backdrop-filter: blur(18px);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
+      letter-spacing: 0.01em;
+      padding: 0 2px;
     }
 
     .toc {
-      margin-left: auto;
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-end;
-      gap: 4px 10px;
-      padding: 0 2px 2px;
-      font-size: 0.6rem;
-      line-height: 1.25;
-      color: rgba(229, 238, 251, 0.42);
-      opacity: 0.7;
+      gap: 2px 8px;
+      max-width: min(48vw, 520px);
+      padding: 2px 4px;
+      font-size: 0.56rem;
+      line-height: 1.15;
+      color: rgba(229, 238, 251, 0.38);
+      opacity: 0.55;
+      z-index: 2;
+      pointer-events: auto;
     }
 
     .toc a {
@@ -161,124 +164,53 @@
     }
 
     .toc a:hover {
-      color: rgba(229, 238, 251, 0.7);
-    }
-
-    .stage {
-      position: relative;
-      min-height: 0;
-      border-radius: 28px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: rgba(2, 6, 23, 0.42);
-      box-shadow: var(--shadow);
-    }
-
-    .stage::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 22%, rgba(0, 0, 0, 0.14));
-      z-index: 1;
-    }
-
-    img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      max-height: none;
-      object-fit: contain;
-      background: #fff;
-      transition: opacity 0.18s ease, transform 0.18s ease;
-    }
-
-    .fade-out {
-      opacity: 0;
-      transform: scale(0.992);
-    }
-
-    .stage-nav {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .nav-hit {
-      width: 22%;
-      height: 100%;
-      pointer-events: auto;
-      border: 0;
-      background: linear-gradient(90deg, rgba(15, 23, 42, 0.24), transparent);
-      border-radius: 0;
-      color: transparent;
-    }
-
-    .nav-hit.next {
-      background: linear-gradient(270deg, rgba(15, 23, 42, 0.24), transparent);
-    }
-
-    .nav-hit:hover {
-      background-color: rgba(56, 189, 248, 0.12);
+      color: rgba(229, 238, 251, 0.68);
     }
 
     @media (max-width: 720px) {
-      .shell {
-        padding: 12px;
-        gap: 12px;
-      }
-
-      header {
-        padding: 14px;
-        border-radius: 18px;
-      }
-
-      .toolbar {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .page-indicator {
-        min-width: 92px;
-      }
-
-      img {
-        height: 100%;
-      }
-
       .nav-hit {
         width: 28%;
+      }
+
+      .controls {
+        bottom: 8px;
+        padding: 4px 6px;
+        gap: 3px;
+      }
+
+      button {
+        padding: 4px 7px;
+        font-size: 0.72rem;
+      }
+
+      .indicator {
+        min-width: 48px;
+        font-size: 0.73rem;
+      }
+
+      .toc {
+        right: 6px;
+        bottom: 6px;
+        max-width: 58vw;
+        font-size: 0.52rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <main>
-      <div class="viewer">
-        <div class="stage" id="stage">
-          <img id="pageImage" alt="Page 1" src="Media/page-001.png" />
-          <div class="stage-nav" aria-hidden="true">
-            <button class="nav-hit prev" id="stagePrev" type="button" aria-label="이전 페이지"></button>
-            <button class="nav-hit next" id="stageNext" type="button" aria-label="다음 페이지"></button>
-          </div>
-        </div>
-
-        <div class="controls">
-          <button id="prevBtn" type="button" aria-label="이전 페이지">이전</button>
-          <div id="pageIndicator" class="page-indicator">1 / 45</div>
-          <button id="nextBtn" type="button" aria-label="다음 페이지">다음</button>
-        </div>
-
-        <div id="toc" class="toc" aria-label="목차"></div>
-
-      </div>
-    </main>
+  <div class="stage" id="stage">
+    <img id="pageImage" class="page-image" alt="Page 1" src="Media/page-001.png" />
+    <button class="nav-hit prev" id="stagePrev" type="button" aria-label="이전 페이지"></button>
+    <button class="nav-hit next" id="stageNext" type="button" aria-label="다음 페이지"></button>
   </div>
+
+  <div class="controls">
+    <button id="prevBtn" type="button" aria-label="이전 페이지">이전</button>
+    <div id="pageIndicator" class="indicator">1 / 45</div>
+    <button id="nextBtn" type="button" aria-label="다음 페이지">다음</button>
+  </div>
+
+  <div id="toc" class="toc" aria-label="목차"></div>
 
   <script>
     const totalPages = 45;
@@ -286,12 +218,12 @@
 
     const pageImage = document.getElementById("pageImage");
     const pageIndicator = document.getElementById("pageIndicator");
-    const toc = document.getElementById("toc");
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
     const stagePrev = document.getElementById("stagePrev");
     const stageNext = document.getElementById("stageNext");
     const stage = document.getElementById("stage");
+    const toc = document.getElementById("toc");
 
     const pad = (value) => String(value).padStart(3, "0");
     const label = (value) => String(value).padStart(2, "0");
