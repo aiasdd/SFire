@@ -71,11 +71,11 @@
       pointer-events: none;
     }
 
-    .app:hover {
+    .app:has(.sidebar:hover) {
       grid-template-columns: 320px minmax(0, 1fr);
     }
 
-    .app:hover .sidebar,
+    .app:has(.sidebar:hover) .sidebar,
     .sidebar:hover {
       width: 320px;
     }
@@ -90,7 +90,7 @@
       pointer-events: none;
     }
 
-    .app:hover .sidebar-body,
+    .app:has(.sidebar:hover) .sidebar-body,
     .sidebar:hover .sidebar-body {
       opacity: 1;
       transform: translateX(0);
@@ -291,11 +291,11 @@
         grid-template-columns: 18px minmax(0, 1fr);
       }
 
-      .app:hover {
+      .app:has(.sidebar:hover) {
         grid-template-columns: 280px minmax(0, 1fr);
       }
 
-      .app:hover .sidebar,
+      .app:has(.sidebar:hover) .sidebar,
       .sidebar:hover {
         width: 280px;
       }
