@@ -8,12 +8,15 @@
     :root {
       color-scheme: light;
       --bg: #0b1220;
-      --surface: rgba(19, 28, 48, 0.58);
-      --surface-soft: rgba(255, 255, 255, 0.08);
+      --panel: rgba(19, 28, 48, 0.76);
+      --panel-soft: rgba(255, 255, 255, 0.08);
+      --panel-strong: rgba(255, 255, 255, 0.94);
       --text: #e5eefb;
-      --muted: rgba(229, 238, 251, 0.72);
+      --muted: rgba(229, 238, 251, 0.7);
       --border: rgba(255, 255, 255, 0.14);
       --shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+      --accent: #38bdf8;
+      --accent-2: #0ea5e9;
     }
 
     * {
@@ -31,25 +34,154 @@
       font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 30%),
-        radial-gradient(circle at top right, rgba(14, 165, 233, 0.16), transparent 24%),
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.14), transparent 24%),
         linear-gradient(180deg, #0b1220, #0f172a 40%, #111827 100%);
     }
 
-    .stage {
-      position: fixed;
-      inset: 0;
+    .app {
       display: grid;
-      place-items: stretch;
-      background: rgba(2, 6, 23, 0.18);
+      grid-template-columns: 18px minmax(0, 1fr);
+      height: 100vh;
+      width: 100vw;
+      gap: 0;
+      transition: grid-template-columns 0.22s ease;
+    }
+
+    .sidebar {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      border-right: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      z-index: 2;
+      overflow: hidden;
+      width: 18px;
+      transition: width 0.22s ease;
+    }
+
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 30%, rgba(255, 255, 255, 0.04));
+      pointer-events: none;
+    }
+
+    .app:hover {
+      grid-template-columns: 320px minmax(0, 1fr);
+    }
+
+    .app:hover .sidebar,
+    .sidebar:hover {
+      width: 320px;
+    }
+
+    .sidebar-body {
+      flex: 1;
+      overflow: auto;
+      padding: 12px 10px 16px;
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+
+    .app:hover .sidebar-body,
+    .sidebar:hover .sidebar-body {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .toc-item {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+
+    .toc-item:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .toc-item.active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.46);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.18) inset;
+    }
+
+    .toc-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .toc-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .main {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      background: rgba(2, 6, 23, 0.14);
+    }
+
+    .viewer {
+      position: relative;
+      min-height: 0;
+      padding: 16px 18px 10px;
+      display: grid;
+      place-items: center;
+    }
+
+    .frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      background: rgba(255, 255, 255, 0.02);
     }
 
     .page-image {
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
+      display: block;
       object-fit: contain;
       object-position: center center;
-      display: block;
       background: rgba(255, 255, 255, 0.02);
       transition: opacity 0.18s ease, transform 0.18s ease;
     }
@@ -63,11 +195,12 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 22%;
+      width: 18%;
       border: 0;
       padding: 0;
       background: transparent;
       cursor: pointer;
+      z-index: 2;
     }
 
     .nav-hit.prev {
@@ -79,30 +212,35 @@
     }
 
     .nav-hit.prev:hover {
-      background: linear-gradient(90deg, rgba(15, 23, 42, 0.18), transparent);
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.16), transparent);
     }
 
     .nav-hit.next:hover {
-      background: linear-gradient(270deg, rgba(15, 23, 42, 0.18), transparent);
+      background: linear-gradient(270deg, rgba(15, 23, 42, 0.16), transparent);
+    }
+
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(16px);
+      z-index: 3;
+      overflow: hidden;
     }
 
     .controls {
-      position: fixed;
-      left: 50%;
-      bottom: 12px;
-      transform: translateX(-50%);
       display: flex;
       align-items: center;
       gap: 4px;
       padding: 5px 8px;
-      border: 1px solid var(--border);
       border-radius: 14px;
-      background: rgba(15, 23, 42, 0.72);
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow);
-      z-index: 3;
-      max-width: calc(100vw - 24px);
-      overflow: hidden;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.14);
+      flex: 0 0 auto;
     }
 
     button {
@@ -139,79 +277,131 @@
       padding: 0 2px;
     }
 
-    .toc {
-      position: fixed;
-      right: 10px;
-      bottom: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 2px 8px;
-      max-width: min(48vw, 520px);
-      padding: 2px 4px;
-      font-size: 0.56rem;
-      line-height: 1.15;
-      color: rgba(229, 238, 251, 0.78);
-      opacity: 0.95;
-      z-index: 2;
-      pointer-events: auto;
-    }
-
-    .toc a {
-      color: inherit;
-      text-decoration: none;
+    .hint {
+      margin-left: auto;
+      color: rgba(229, 238, 251, 0.52);
+      font-size: 0.58rem;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .toc a:hover {
-      color: rgba(255, 255, 255, 0.98);
+    @media (max-width: 1120px) {
+      .app {
+        grid-template-columns: 18px minmax(0, 1fr);
+      }
+
+      .app:hover {
+        grid-template-columns: 280px minmax(0, 1fr);
+      }
+
+      .app:hover .sidebar,
+      .sidebar:hover {
+        width: 280px;
+      }
     }
 
-    @media (max-width: 720px) {
-      .nav-hit {
-        width: 28%;
+    @media (max-width: 860px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 280px minmax(0, 1fr);
       }
 
-      .controls {
-        bottom: 8px;
-        padding: 4px 6px;
-        gap: 3px;
+      .sidebar {
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+        overflow: auto;
       }
 
-      button {
-        padding: 4px 7px;
-        font-size: 0.72rem;
+      .sidebar::after,
+      .sidebar-header,
+      .sidebar-body {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
       }
 
-      .indicator {
-        min-width: 48px;
-        font-size: 0.73rem;
+      .sidebar::after {
+        display: none;
       }
 
-      .toc {
-        right: 6px;
-        bottom: 6px;
-        max-width: 58vw;
-        font-size: 0.52rem;
-        color: rgba(229, 238, 251, 0.82);
+      .sidebar-body {
+        padding-bottom: 10px;
+      }
+
+      .toc-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .toc-item {
+        padding: 6px;
+      }
+
+      .toc-thumb {
+        aspect-ratio: 4 / 3;
+      }
+
+      .viewer {
+        padding: 12px 12px 8px;
+      }
+
+      .frame {
+        border-radius: 20px;
+      }
+
+      .bottom-bar {
+        padding: 7px 10px 10px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        grid-template-rows: 240px minmax(0, 1fr);
+      }
+
+      .toc-list {
+        grid-template-columns: 1fr;
+      }
+
+      .bottom-bar {
+        flex-wrap: wrap;
+      }
+
+      .hint {
+        width: 100%;
+        margin-left: 0;
       }
     }
   </style>
 </head>
 <body>
-  <div class="stage" id="stage">
-    <img id="pageImage" class="page-image" alt="Page 1" src="Media/page-001.png" />
-    <button class="nav-hit prev" id="stagePrev" type="button" aria-label="이전 페이지"></button>
-    <button class="nav-hit next" id="stageNext" type="button" aria-label="다음 페이지"></button>
-  </div>
+  <div class="app">
+    <aside class="sidebar" aria-label="목차 사이드바">
+      <div class="sidebar-body">
+        <div id="tocList" class="toc-list"></div>
+      </div>
+    </aside>
 
-  <div class="controls">
-    <button id="prevBtn" type="button" aria-label="이전 페이지">이전</button>
-    <div id="pageIndicator" class="indicator">1 / 45</div>
-    <button id="nextBtn" type="button" aria-label="다음 페이지">다음</button>
-  </div>
+    <main class="main">
+      <div class="viewer">
+        <div class="frame" id="frame">
+          <img id="pageImage" class="page-image" alt="Page 1" src="Media/page-001.png" />
+          <button class="nav-hit prev" id="stagePrev" type="button" aria-label="이전 페이지"></button>
+          <button class="nav-hit next" id="stageNext" type="button" aria-label="다음 페이지"></button>
+        </div>
+      </div>
 
-  <div id="toc" class="toc" aria-label="목차"></div>
+      <div class="bottom-bar">
+        <div class="controls">
+          <button id="prevBtn" type="button" aria-label="이전 페이지">이전</button>
+          <div id="pageIndicator" class="indicator">1 / 45</div>
+          <button id="nextBtn" type="button" aria-label="다음 페이지">다음</button>
+        </div>
+        <div class="hint">왼쪽 목록 클릭 / 버튼 / ← → / 스와이프</div>
+      </div>
+    </main>
+  </div>
 
   <script>
     const totalPages = 45;
@@ -223,37 +413,50 @@
     const nextBtn = document.getElementById("nextBtn");
     const stagePrev = document.getElementById("stagePrev");
     const stageNext = document.getElementById("stageNext");
-    const stage = document.getElementById("stage");
-    const toc = document.getElementById("toc");
+    const frame = document.getElementById("frame");
+    const tocList = document.getElementById("tocList");
 
     const pad = (value) => String(value).padStart(3, "0");
     const label = (value) => String(value).padStart(2, "0");
 
-    const tocItems = [
-      { page: 1, label: "Cover" },
-      { page: 11, label: "Copilot Chat" },
-      { page: 17, label: "Hands-on Chat" },
-      { page: 23, label: "Hands-on Word" },
-      { page: 26, label: "Hands-on Excel" },
-      { page: 29, label: "Hands-on PowerPoint" },
-    ];
+    const tocButtons = new Map();
 
-    tocItems.forEach((item, index) => {
-      const link = document.createElement("a");
-      link.href = `#page-${pad(item.page)}`;
-      link.textContent = item.label;
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        renderPage(item.page);
-      });
-      toc.appendChild(link);
+    function buildSidebar() {
+      for (let page = 1; page <= totalPages; page += 1) {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "toc-item";
+        item.dataset.page = String(page);
+        item.setAttribute("aria-label", `Page ${label(page)}`);
 
-      if (index < tocItems.length - 1) {
-        const separator = document.createElement("span");
-        separator.textContent = "·";
-        toc.appendChild(separator);
+        const thumb = document.createElement("div");
+        thumb.className = "toc-thumb";
+
+        const image = document.createElement("img");
+        image.src = `Media/page-${pad(page)}.png`;
+        image.alt = `Page ${page} preview`;
+        image.loading = "lazy";
+
+        thumb.appendChild(image);
+
+        item.appendChild(thumb);
+
+        item.addEventListener("click", () => renderPage(page));
+        tocList.appendChild(item);
+        tocButtons.set(page, item);
       }
-    });
+    }
+
+    function setActiveSidebar(page) {
+      for (const [itemPage, element] of tocButtons.entries()) {
+        element.classList.toggle("active", itemPage === page);
+      }
+
+      const active = tocButtons.get(page);
+      if (active) {
+        active.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
+    }
 
     function renderPage(page) {
       state.page = page;
@@ -270,6 +473,7 @@
         stageNext.disabled = page === totalPages;
         pageImage.classList.remove("fade-out");
         location.hash = `page-${pad(page)}`;
+        setActiveSidebar(page);
       }, 120);
     }
 
@@ -304,13 +508,13 @@
     let touchStartX = 0;
     let touchStartY = 0;
 
-    stage.addEventListener("touchstart", (event) => {
+    frame.addEventListener("touchstart", (event) => {
       const touch = event.changedTouches[0];
       touchStartX = touch.clientX;
       touchStartY = touch.clientY;
     }, { passive: true });
 
-    stage.addEventListener("touchend", (event) => {
+    frame.addEventListener("touchend", (event) => {
       const touch = event.changedTouches[0];
       const deltaX = touch.clientX - touchStartX;
       const deltaY = touch.clientY - touchStartY;
@@ -333,6 +537,7 @@
       return Number.isFinite(parsed) && parsed >= 1 && parsed <= totalPages ? parsed : 1;
     })();
 
+    buildSidebar();
     renderPage(initialPage);
   </script>
 </body>
