@@ -37,20 +37,31 @@
       margin: 0;
       padding: 20px;
       display: grid;
-      grid-template-columns: 230px minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 20px;
       align-items: start;
+      position: relative;
     }
 
     .toc {
-      position: sticky;
+      position: fixed;
       top: 20px;
+      left: 0;
+      width: 230px;
       max-height: calc(100vh - 40px);
       overflow: auto;
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 14px;
+      z-index: 10;
+      transform: translateX(calc(-100% + 28px));
+      transition: transform 0.22s ease;
+    }
+
+    .toc:hover,
+    .toc:focus-within {
+      transform: translateX(0);
     }
 
     .toc h2 {
@@ -248,7 +259,9 @@
 
       .toc {
         position: static;
+        transform: none;
         max-height: none;
+        width: auto;
       }
     }
   </style>
