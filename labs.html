@@ -13,6 +13,7 @@
       --muted: #5e6f86;
       --accent: #0f6cbd;
       --accent-soft: #e8f2fc;
+      --section-soft: #f4f8fd;
       --code-bg: #0f172a;
       --code-text: #d6deeb;
     }
@@ -137,6 +138,15 @@
       line-height: 1.3;
     }
 
+    #doc h2 {
+      background: var(--section-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-top: 1.9em;
+      margin-bottom: 0.9em;
+    }
+
     #doc p {
       margin: 0.8em 0;
     }
@@ -163,7 +173,10 @@
       color: var(--code-text);
       padding: 40px 12px 12px;
       border-radius: 10px;
-      overflow: auto;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
     }
 
     .copy-btn {
@@ -186,7 +199,19 @@
       outline: none;
     }
 
-    #doc code {
+    #doc pre,
+    #doc pre code {
+      font-family: "Segoe UI", "Noto Sans KR", sans-serif;
+    }
+
+    #doc pre code {
+      display: block;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    #doc :not(pre) > code {
       font-family: Consolas, "Courier New", monospace;
     }
 
