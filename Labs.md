@@ -100,13 +100,13 @@ https://www.kcaca.or.kr/inform/data.html
 ```
 직원에게 안내하기전 안내문에 대해서 법무팀과 협의가 필요한 부분을 찾아줘. 찾아진 항목에 왜 협의가 필요한지에 대한 댓글을 추가해줘. 
 ```
-> - 텍스트 테이블 화 
-> - 주요 변경 요약을 테이블로 변경하고 컬럼추가
+> - 텍스트 테이블 화 (주요 변경 요약 블럭지정 후 프롬프트 요청)
     ![alt text](image-2.png)
     ```
     테이블로 변경하고 변경 유형 컬럼을 추가해줘
     ```
     ![alt text](image-3.png)
+    
 > - One Drive에서 파일비교
 ![alt text](image-5.png)
 
@@ -154,17 +154,17 @@ https://www.kcaca.or.kr/inform/data.html
 ```
 
 ### **Tips & Tricks**
-> 전체 개요 요청
+> 주요 지표에 대한 개요 
 ```
 InsuranceData 테이블의 데이터 세트를 요약하고 주요 지표에 대한 개요를  새로운 sheet에 제공해줘.
 ```
 ![alt text](image-6.png)
-> 주요 패턴 분석 요청
+> 주요 패턴 분석 
 ```
 InsuranceData 테이블의 데이터에서 나타나는 주요 패턴을 보여주는 테이블을 새로운 Sheet에 생성해줘.
 ```
 ![alt text](image-7.png)
-> 주요 인사이트 요청
+> 주요 인사이트 도출
 ```
 데이터 분석에서 얻은 주요 인사이트를 요약하여 새로운 Sheet에 제시하세요
 ```
