@@ -130,7 +130,7 @@
     .topbar a {
       text-decoration: none;
       color: var(--accent);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
     }
 
@@ -163,11 +163,33 @@
     }
 
     #doc blockquote {
-      margin: 1em 0;
-      padding: 0.7em 1em;
+      margin: 0.5em 0;
+      padding: 0.45em 0.8em;
       background: #f8fbff;
       border-left: 4px solid var(--accent);
       color: #30445f;
+    }
+
+    #doc blockquote p {
+      margin: 0.25em 0;
+      line-height: 1.45;
+    }
+
+    #doc blockquote p:first-child,
+    #doc blockquote p:last-child {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    #doc blockquote ul,
+    #doc blockquote ol {
+      margin: 0.2em 0;
+      padding-left: 1.2em;
+    }
+
+    #doc blockquote li {
+      margin: 0.12em 0;
+      line-height: 1.4;
     }
 
     #doc img {
@@ -182,7 +204,7 @@
       position: relative;
       background: var(--code-bg);
       color: var(--code-text);
-      padding: 40px 12px 12px;
+      padding: 12px;
       border-radius: 10px;
       width: 100%;
       min-width: 0;
@@ -217,6 +239,9 @@
 
     #doc pre code {
       display: block;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      padding-right: 72px;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
       word-break: break-word;
@@ -231,6 +256,23 @@
       border-collapse: collapse;
       margin: 1em 0;
       font-size: 0.95rem;
+    }
+
+    #doc .tips-panel {
+      margin: 1.1em 0;
+      padding: 0.9em 1em;
+      border: 1px solid #b8d4ee;
+      border-left: 5px solid var(--accent);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #f3f9ff 0%, #eef6ff 100%);
+    }
+
+    #doc .tips-panel > h1,
+    #doc .tips-panel > h2,
+    #doc .tips-panel > h3,
+    #doc .tips-panel > h4 {
+      margin-top: 0;
+      margin-bottom: 0.45em;
     }
 
     #doc th,
@@ -399,6 +441,44 @@
       });
     }
 
+    function decorateTipsSections(root) {
+      const headings = root.querySelectorAll("h1, h2, h3, h4");
+
+      headings.forEach((heading) => {
+        const text = heading.textContent.trim().toLowerCase();
+        const normalized = text.replace(/\s+/g, " ");
+        if (!normalized.includes("tips & tricks") && !normalized.includes("tips and tricks")) {
+          return;
+        }
+
+        if (heading.parentElement && heading.parentElement.classList.contains("tips-panel")) {
+          return;
+        }
+
+        const wrapper = document.createElement("section");
+        wrapper.className = "tips-panel";
+        const currentLevel = Number(heading.tagName.substring(1));
+
+        heading.parentNode.insertBefore(wrapper, heading);
+        wrapper.appendChild(heading);
+
+        let next = wrapper.nextSibling;
+        while (next) {
+          const candidate = next;
+          next = next.nextSibling;
+
+          if (candidate.nodeType === Node.ELEMENT_NODE && /^H[1-4]$/.test(candidate.tagName)) {
+            const candidateLevel = Number(candidate.tagName.substring(1));
+            if (candidateLevel <= currentLevel) {
+              break;
+            }
+          }
+
+          wrapper.appendChild(candidate);
+        }
+      });
+    }
+
     async function render() {
       const doc = document.getElementById("doc");
 
@@ -424,6 +504,7 @@
           }
         });
 
+        decorateTipsSections(doc);
         addCopyButtons(doc);
       } catch (error) {
         doc.className = "error";
