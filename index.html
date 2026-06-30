@@ -31,17 +31,23 @@
         radial-gradient(circle at 10% 15%, #0ea5e9 0%, transparent 35%),
         radial-gradient(circle at 90% 85%, #22d3ee 0%, transparent 35%),
         linear-gradient(135deg, var(--bg-1), var(--bg-2));
-      padding: 24px;
+      padding: 10px;
+      overflow: hidden;
     }
 
     .home {
-      width: min(760px, 100%);
+      width: min(1240px, 100%);
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 20px;
       backdrop-filter: blur(8px);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
       padding: clamp(20px, 4vw, 40px);
+      max-height: calc(100vh - 20px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      gap: 16px;
     }
 
     h1 {
@@ -103,6 +109,68 @@
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
       font-weight: 600;
     }
+
+    .file-panels {
+      margin-top: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .file-panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.45);
+      padding: 14px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .file-panel h2 {
+      margin: 0 0 8px;
+      font-size: 1.02rem;
+      color: #f8fafc;
+    }
+
+    .file-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 6px;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .file-list a {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .file-list a:hover,
+    .file-list a:focus-visible {
+      border-color: var(--accent);
+      background: rgba(34, 211, 238, 0.12);
+      outline: none;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin: 0;
+    }
   </style>
 </head>
 <body>
@@ -121,6 +189,72 @@
         <strong>Slides</strong>
       </a>
     </section>
+
+    <section class="file-panels" aria-label="File Links">
+      <article class="file-panel" aria-labelledby="labfiles-title">
+        <h2 id="labfiles-title">Labfiles</h2>
+        <ul id="labfiles-list" class="file-list"></ul>
+      </article>
+
+      <article class="file-panel" aria-labelledby="clips-title">
+        <h2 id="clips-title">Clips</h2>
+        <ul id="clips-list" class="file-list"></ul>
+      </article>
+    </section>
   </main>
+
+  <script>
+    const filesByFolder = {
+      Labfiles: [
+        "(첨부파일 1) 보험상품_판매분석_실습자료.xlsx",
+        "(첨부파일 2) 자동차보험 약관(개정 전).pdf",
+        "(첨부파일 3) 자동차보험 약관(개정 후).pdf",
+        "(첨부파일 4) 보험 데이터 분석.xlsx",
+        "(첨부파일 5) M365_Copilot_도입전략_보고서.docx",
+        "(첨부파일 6) HR_Policy_Guide_에이전트 지식소스.docx",
+        "Labs_prompts.txt",
+        "Microsoft 365 Copilot 삼성화재 교안 7월.pdf"
+      ],
+      Clips: [
+        "cowork.mp4_ko-KR.mp4",
+        "Researcher-Council.mp4",
+        "Word.excel.powerpoint agent_ko-KR.mp4"
+      ]
+    };
+
+    function createFileHref(folderName, fileName) {
+      return `${folderName}/${encodeURIComponent(fileName)}`;
+    }
+
+    function renderFileList(listId, folderName, fileNames) {
+      const list = document.getElementById(listId);
+      if (!list) {
+        return;
+      }
+
+      list.innerHTML = "";
+
+      if (!fileNames.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty";
+        empty.textContent = "표시할 파일이 없습니다.";
+        list.replaceWith(empty);
+        return;
+      }
+
+      fileNames.forEach((fileName) => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = createFileHref(folderName, fileName);
+        a.textContent = fileName;
+        a.setAttribute("download", fileName);
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+    }
+
+    renderFileList("labfiles-list", "Labfiles", filesByFolder.Labfiles);
+    renderFileList("clips-list", "Clips", filesByFolder.Clips);
+  </script>
 </body>
 </html>

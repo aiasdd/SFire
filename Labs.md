@@ -28,8 +28,12 @@ https://www.kcaca.or.kr/inform/data.html
 ```
 이 데이터의 보험 상품 판매 인사이트를 상세하게 분석하고, 자동차보험과장기보험, 일반보험/저축보험 카테고리의 판매가 줄어들고 있다면 그 이유를 분석하고, 이를 보완하기 위한 실행 방안을 제안해줘
 ```
-> 프롬프트 첨부파일 사용 예시
-![alt text](Media/image_excel.png)
+> 1.Chat > OneDrive에서 파일 선택 > 결과 > Pages에 추가 / 다음으로 내보내기(Word)
+> ![alt text](Media/image_excel.png)
+
+### **Tips & Tricks**
+- Chat 에서 Excel Agent에서도 동일 프롬프트 보여주기
+> ![alt text](image.png)
 
 ## 3. Hands-on Word
 
@@ -88,6 +92,11 @@ https://www.kcaca.or.kr/inform/data.html
 신뢰를 줄 수 있도록 친절하고 명확하게 작성해줘
 ```
 ### **Tips & Tricks**
+- 추적 활성화
+
+```
+삼성화재 고객 대상 공식 공지문 톤으로 업데이트
+```
 -  블럭 지정 > Copilot 아이콘 > 자동 다시 쓰기
 
 ![alt text](Media/image-14.png)
@@ -98,12 +107,6 @@ https://www.kcaca.or.kr/inform/data.html
 이 단락을 다시 작성해서 세부 정보를 추가해줘. 톤은 전문적이고 매력적 이어야 해. 
 ```
 ![alt text](Media/image-16.png)
-
-- 추적 활성화
-
-```
-삼성화재 고객 대상 공식 공지문 톤으로 업데이트
-```
 
 - 코멘트(댓글) 추가 (워드 온라인 순차 반영)
 ```
