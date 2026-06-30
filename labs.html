@@ -134,6 +134,36 @@
       font-weight: 600;
     }
 
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-all-btn {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .toggle-all-btn:hover,
+    .toggle-all-btn:focus-visible {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      outline: none;
+    }
+
+    .toggle-all-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
     #doc {
       line-height: 1.7;
       word-break: keep-all;
@@ -156,6 +186,33 @@
       padding: 10px 14px;
       margin-top: 1.9em;
       margin-bottom: 0.9em;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      transition: background-color 0.15s ease;
+      padding-right: 42px;
+    }
+
+    #doc h2:hover,
+    #doc h2:focus-visible {
+      background: #eaf2fb;
+      outline: none;
+    }
+
+    #doc h2::after {
+      content: "▾";
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1;
+      transition: transform 0.15s ease;
+    }
+
+    #doc h2.is-collapsed::after {
+      transform: translateY(-50%) rotate(-90deg);
     }
 
     #doc p {
@@ -318,7 +375,10 @@
     <main class="content">
       <div class="topbar">
         <h1>Labs</h1>
-        <a href="index.html">Home</a>
+        <div class="topbar-actions">
+          <button id="toggle-all-btn" class="toggle-all-btn" type="button" aria-label="모두 접기">모두 접기</button>
+          <a href="index.html">Home</a>
+        </div>
       </div>
       <div id="doc" class="loading">Labs.md를 불러오는 중입니다...</div>
     </main>
@@ -479,6 +539,155 @@
       });
     }
 
+    function getH2SectionNodes(heading) {
+      const sectionNodes = [];
+      let next = heading.nextElementSibling;
+
+      while (next && next.tagName !== "H2") {
+        sectionNodes.push(next);
+        next = next.nextElementSibling;
+      }
+
+      return sectionNodes;
+    }
+
+    function toggleH2Section(heading) {
+      const sectionNodes = getH2SectionNodes(heading);
+      const collapsed = !heading.classList.contains("is-collapsed");
+
+      heading.classList.toggle("is-collapsed", collapsed);
+      heading.setAttribute("aria-expanded", String(!collapsed));
+
+      sectionNodes.forEach((node) => {
+        node.hidden = collapsed;
+      });
+    }
+
+    function setH2SectionCollapsed(heading, collapsed) {
+      const sectionNodes = getH2SectionNodes(heading);
+
+      heading.classList.toggle("is-collapsed", collapsed);
+      heading.setAttribute("aria-expanded", String(!collapsed));
+
+      sectionNodes.forEach((node) => {
+        node.hidden = collapsed;
+      });
+    }
+
+    function syncToggleAllButton() {
+      const toggleAllBtn = document.getElementById("toggle-all-btn");
+      const h2Headings = document.querySelectorAll("#doc h2");
+      if (!toggleAllBtn) {
+        return;
+      }
+
+      if (!h2Headings.length) {
+        toggleAllBtn.disabled = true;
+        toggleAllBtn.textContent = "모두 접기";
+        toggleAllBtn.setAttribute("aria-label", "모두 접기");
+        return;
+      }
+
+      toggleAllBtn.disabled = false;
+      const hasExpanded = Array.from(h2Headings).some((heading) => !heading.classList.contains("is-collapsed"));
+      toggleAllBtn.textContent = hasExpanded ? "모두 접기" : "모두 펼치기";
+      toggleAllBtn.setAttribute("aria-label", toggleAllBtn.textContent);
+    }
+
+    function findOwnerH2(heading) {
+      if (heading.tagName === "H2") {
+        return heading;
+      }
+
+      const h2Headings = Array.from(document.querySelectorAll("#doc h2"));
+      for (const h2 of h2Headings) {
+        const sectionNodes = getH2SectionNodes(h2);
+        const inSection = sectionNodes.some((node) => node === heading || node.contains(heading));
+        if (inSection) {
+          return h2;
+        }
+      }
+
+      return null;
+    }
+
+    function jumpToHeadingById(id) {
+      const target = document.getElementById(id);
+      if (!target) {
+        return;
+      }
+
+      const ownerH2 = findOwnerH2(target);
+      if (ownerH2 && ownerH2.classList.contains("is-collapsed")) {
+        setH2SectionCollapsed(ownerH2, false);
+      }
+
+      syncToggleAllButton();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      if (history.pushState) {
+        history.pushState(null, "", `#${id}`);
+      } else {
+        location.hash = id;
+      }
+    }
+
+    function enableTocNavigation() {
+      const list = document.getElementById("toc-list");
+      if (!list) {
+        return;
+      }
+
+      list.onclick = (event) => {
+        const link = event.target.closest('a[href^="#"]');
+        if (!link) {
+          return;
+        }
+
+        event.preventDefault();
+        const id = decodeURIComponent(link.getAttribute("href").slice(1));
+        jumpToHeadingById(id);
+      };
+    }
+
+    function enableH2Collapsible(root) {
+      const h2Headings = root.querySelectorAll("h2");
+      const toggleAllBtn = document.getElementById("toggle-all-btn");
+
+      h2Headings.forEach((heading) => {
+        heading.setAttribute("role", "button");
+        heading.setAttribute("tabindex", "0");
+        heading.setAttribute("aria-expanded", "true");
+
+        heading.addEventListener("click", () => {
+          toggleH2Section(heading);
+          syncToggleAllButton();
+        });
+
+        heading.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") {
+            return;
+          }
+
+          event.preventDefault();
+          toggleH2Section(heading);
+          syncToggleAllButton();
+        });
+      });
+
+      if (toggleAllBtn) {
+        toggleAllBtn.addEventListener("click", () => {
+          const shouldCollapseAll = Array.from(h2Headings).some((heading) => !heading.classList.contains("is-collapsed"));
+          h2Headings.forEach((heading) => {
+            setH2SectionCollapsed(heading, shouldCollapseAll);
+          });
+          syncToggleAllButton();
+        });
+      }
+
+      syncToggleAllButton();
+    }
+
     async function render() {
       const doc = document.getElementById("doc");
 
@@ -505,6 +714,8 @@
         });
 
         decorateTipsSections(doc);
+        enableH2Collapsible(doc);
+        enableTocNavigation();
         addCopyButtons(doc);
       } catch (error) {
         doc.className = "error";

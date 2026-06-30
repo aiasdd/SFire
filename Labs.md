@@ -1,17 +1,7 @@
-## 2. Prompt 이해
+## 2. Copilot Chat
 
-![Page 10](Media/page-010.png)
+![Page 10](Media/page-012.png)
 
-```
-나는 삼성화재 장기보험팀 담당자야. 이번에 출시한 「무배당 건강보험」을 기존 고객에게 안내하고 상담 예약을 유도하는 이메일 초안을 작성해줘. 
-대상은 자동차보험에 가입한 40~50대 기존 고객이고, 친근하지만 신뢰감 있는 존댓말 톤으로 써줘. 
-첨부한 상품 요약서의 보장 항목과 보험료 예시 표만 근거로 작성하되, 확인되지 않은 수치는 임의로 넣지 마. 
-결과는 제목 1줄과 본문 4문단(인사·핵심보장·고객혜택·상담안내), 300자 내외로 정리하고 마지막에 상담 예약 문구를 포함해줘. 
-```
-
-## 3. Copilot Chat
-
-![Page 17](Media/page-017.png)
 > https://www.kcaca.or.kr/inform/data.html 
 
 ```
@@ -19,26 +9,25 @@ https://www.kcaca.or.kr/inform/data.html
 이 링크의 최신 게시글 중 'AI 시대 진화하는 보험사기, 범정부 공조' 보도자료 내용을 요약해줘.
 삼성화재의 심사 및 보상 과정에서 이러한 고도화된 사기를 조기에 탐지하고 대응하기 위한 업무 프로세스 가이드를 작성해줘.
 ```
-![Page 18](Media/page-018.png)
+![Page 13](Media/page-013.png)
+
 ```
 클레임(사고/보상) 유형별 발생 비중을 요약하고, 급증 구간이 있으면 원인 가설을 3가지 제안해 줘. 
 ```
 ```
 인사이트를 요약해 세일즈/업무 개선 보고서 초안을 작성해 줘.
 ```
-
-![Page 19](Media/page-019.png)
+![Page 14](Media/page-014.png)
 **(첨부파일1) 보험상품_판매분석_실습자료.xlsx**
 ```
- 이 데이터의 보험 상품 판매 인사이트를 상세하게 분석하고, 자동차보험과장기보험, 일반보험/저축보험 카테고리의 판매가 줄어들고 있다면 그 이유를 분석하고, 이를 보완하기 위한 실행 방안을 제안해줘
+이 데이터의 보험 상품 판매 인사이트를 상세하게 분석하고, 자동차보험과장기보험, 일반보험/저축보험 카테고리의 판매가 줄어들고 있다면 그 이유를 분석하고, 이를 보완하기 위한 실행 방안을 제안해줘
 ```
-
 > 프롬프트 첨부파일 사용 예시
-![alt text](image-1.png)
+![alt text](Media/image_excel.png)
 
-## 4. Hands-on Word
+## 3. Hands-on Word
 
-![Page 23](Media/page-023.png)
+![Page 18](Media/page-018.png)
 > Prompt 1: 문서 작성 –보험 업무용 기획 보고서 작성
 ```
 삼성화재 상담/보상/계약관리 업무 효율화를 위해 ‘보험 상담 요약 및 자동 기록 에이전트’ 도입 기획 보고서를 작성해줘.
@@ -54,7 +43,7 @@ https://www.kcaca.or.kr/inform/data.html
 8. 4페이지 분량으로
 ```
 
-![Page 24](Media/page-024.png)
+![Page 24](Media/page-019.png)
 **(실습파일)**
 
 **첨부파일 2. 자동차보험 약관(개정전).pdf**
@@ -95,14 +84,14 @@ https://www.kcaca.or.kr/inform/data.html
 ### **Tips & Tricks**
 -  블럭 지정 > Copilot 아이콘 > 자동 다시 쓰기
 
-![alt text](image-14.png)
-![alt text](image-15.png)
+![alt text](Media/image-14.png)
+![alt text](Media/image-15.png)
 
 - 블럭 지정 > inline 요청
 ```
 이 단락을 다시 작성해서 세부 정보를 추가해줘. 톤은 전문적이고 매력적 이어야 해. 
 ```
-![alt text](image-16.png)
+![alt text](Media/image-16.png)
 
 - 추적 활성화
 
@@ -119,22 +108,22 @@ https://www.kcaca.or.kr/inform/data.html
 ```
 테이블로 변경하고 변경 유형 컬럼을 추가해줘
 ```
-![alt text](image-12.png)
-![alt text](image-13.png)
+![alt text](Media/image-12.png)
+![alt text](Media/image-13.png)
 
 - One Drive에서 파일비교
 
-![alt text](image-11.png)
+![alt text](Media/image-11.png)
 
-## 4. Hands-on Excel
+## 3. Hands-on Excel
 
 > 참고: 편집, 채팅 및 계획 모드 중에서 선택 Excel의 Copilot는 편집, 계획 또는 채팅의 세 가지 모드를 제공합니다. 기본적으로 Excel의 Copilot는 편집 모드로 열립니다. 편집 모드에서 Excel의 Copilot는 요청에 따라 통합 문서를 직접 편집할 수 있습니다. 계획 모드를 사용하여 통합 문서를 편집하기 전에 계획을 세우고 채팅 모드를 사용하여 채팅 내에 Copilot 응답을 포함하도록 합니다.
 > - **편집 모드** 허용 은 데이터 재구성, 시트 병합 또는 여러 요소를 사용하여 보고서 작성과 같은 복잡한 다단계 작업을 지원합니다.
 > - **계획 모드**는 작업을 완료하는 구조화된 접근 방식을 만듭니다. Copilot는 즉각적인 작업 대신 계획을 생성하므로 시작하기 전에 접근 방식을 검토하고 확인할 수 있습니다.
 > - **채팅 전용** 모드는 통합 문서를 변경하지 않고 통합 문서 데이터를 분석하고 인사이트를 제공할 수 있습니다.
-> ![alt text](image-4.png)
+> ![alt text](Media/image-4.png)
 
-![Page 26](Media/page-026.png)
+![Page 21](Media/page-021.png)
 **(첨부파일 4) 보험 데이터 분석.xlsx**
 > Prompt 1: 데이터 분석 – 기본
 ```
@@ -149,7 +138,7 @@ https://www.kcaca.or.kr/inform/data.html
 ```
 상품 유형(자동차보험, 건강보험, 장기보험)별 총 지급보험금과 사고 건수를 요약해줘.
 ```
-![Page 27](Media/page-027.png)
+![Page 22](Media/page-022.png)
 **(첨부파일 4) 보험 데이터 분석.xlsx**
 > Prompt 2: 데이터 분석 – 고급분석
 
@@ -174,21 +163,21 @@ https://www.kcaca.or.kr/inform/data.html
 ```
 InsuranceData 테이블의 데이터 세트를 요약하고 주요 지표에 대한 개요를  새로운 sheet에 제공해줘.
 ```
-![alt text](image-6.png)
+![alt text](Media/image-6.png)
 - 주요 패턴 분석 
 ```
 InsuranceData 테이블의 데이터에서 나타나는 주요 패턴을 보여주는 테이블을 새로운 Sheet에 생성해줘.
 ```
-![alt text](image-7.png)
+![alt text](Media/image-7.png)
 - 주요 인사이트 도출
 ```
 데이터 분석에서 얻은 주요 인사이트를 요약하여 새로운 Sheet에 제시하세요
 ```
-![alt text](image-8.png)
+![alt text](Media/image-8.png)
 ```
 핵심 인사이트를 바탕으로 임원진 보고용 대시보드를 새로운 시트에 생성해줘. 삼성화재 스타일을 반영
 ```
-![alt text](image-9.png)
+![alt text](Media/image-9.png)
 - 사용자 지정 함수 생성
 ```
 분기별/지역별 평균 보험료를 계산하는 사용자 지정 함수를 생성해 줘.
@@ -196,14 +185,14 @@ InsuranceData 테이블의 데이터에서 나타나는 주요 패턴을 보여�
 ```
 영업채널별 평균 보험료를 계산하는 사용자 지정 함수를 생성해 줘.
 ```
-![alt text](image-10.png)
+![alt text](Media/image-10.png)
 - 분석 결과 공유용 이메일 작성 요청
 ```
 2024년 보험 데이터 분석 결과를 이메일로 보낼 수 있도록 초안 작성해줘. 수신자는 팀원이며, 분석 결과 요약과 핵심 인사이트를 포함하고, 시각화 자료를 첨부하도록 안내해줘.
 ```
 
-## 4. Hands-on PowerPoint
-![Page 29](Media/page-029.png)
+## 3. Hands-on PowerPoint
+![Page 24](Media/page-024.png)
 **(첨부파일5) M365_Copilot_도입전략_보고서.docx**
 > Prompt 1:  슬라이드 작성 –임원 보고용 슬라이드 초안 작성
 
@@ -220,7 +209,7 @@ InsuranceData 테이블의 데이터에서 나타나는 주요 패턴을 보여�
 6. 기대 효과 및 결론
 ```
 
-![Page 30](Media/page-030.png)
+![Page 25](Media/page-025.png)
 > Prompt 2: 슬라이드 작성 –영업 현장용 발표 자료 작성
 ```
 신규 자동차보험 상품 출시에 맞춰 영업 현장용 발표 자료를 작성해줘.
@@ -236,14 +225,14 @@ InsuranceData 테이블의 데이터에서 나타나는 주요 패턴을 보여�
 5. 판매 화법 가이드 
 현장에서 바로 사용할 수 있도록 시각적으로 명확하게 작성해줘.
 ```
-## 5. Copilot Agent
+## 4. Copilot Agent
 
-![Page 35](Media/page-035.png)
-![Page 36](Media/page-036.png)
-![Page 37](Media/page-037.png)
-![Page 38](Media/page-038.png)
-![Page 39](Media/page-039.png)
-![Page 40](Media/page-040.png)
+![Page 35](Media/page-030.png)
+![Page 36](Media/page-031.png)
+![Page 37](Media/page-032.png)
+![Page 38](Media/page-033.png)
+![Page 39](Media/page-034.png)
+![Page 40](Media/page-035.png)
 
 이름
 ```
@@ -316,7 +305,8 @@ InsuranceData 테이블의 데이터에서 나타나는 주요 패턴을 보여�
 ```
 
 
-![Page 41](Media/page-041.png)
+![Page 37](Media/page-037.png)
 > (첨부파일 6) HR_Policy_Guide_에이전트 지식소스.docx
 
-![Page 43](Media/page-043.png)
+![Page 38](Media/page-038.png)
+
