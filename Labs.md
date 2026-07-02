@@ -107,7 +107,7 @@ https://www.kcaca.or.kr/inform/data.html
 ```
 이 데이터의 보험 상품 판매 인사이트를 상세하게 분석하고, 자동차보험과장기보험, 일반보험/저축보험 카테고리의 판매가 줄어들고 있다면 그 이유를 분석하고, 이를 보완하기 위한 실행 방안을 제안해줘
 ```
-> 1.Chat > OneDrive에서 파일 선택 > 결과 > Pages에 추가 / 다음으로 내보내기(Word)
+> 1.시나리오: Chat > OneDrive에서 파일 선택 > 결과 > Pages에 추가 / 다음으로 내보내기(Word)
 > ![alt text](Media/image_excel.png)
 
 ### **Tips & Tricks**
