@@ -8,17 +8,17 @@
 
 **1. 메인 화면 설명**
 
-![alt text](image-1.png)
+![alt text](./Media/chat/image-1.png)
 
 **2. 페이지** : 캔버스(협업 공간)
-![alt text](image-3.png)
+![alt text](./Media/chat/image-3.png)
 
 **3. 에이전트 리스트 / 핀 고정**
-![alt text](image-2.png)
+![alt text](./Media/chat/image-2.png)
 
 ## 리서치 도구 (Critique / Council)
 모델 설명
-![alt text](image-4.png)
+![alt text](./Media/chat/image-4.png)
 ### 기본
 ```
 항암제 개발에서 가장 주목받는 타겟과 임상시험 현황을 정리해줘
@@ -26,7 +26,7 @@
 ```
 글로벌 제약 산업의 최근 5년간 주요 성장 분야와 매출 트렌드를 조사해줘.
 ```
-![alt text](image-24.png)
+![alt text](./Media/chat/image-24.png)
 
 ### 비평 : 내부 데이터 리포트 비평
 - Copilot의 리서치 비평 모델을 활용하면, 단순히 자료를 요약하는 것에 그치지 않고 자료의 신뢰성, 편향 여부, 해석상의 한계까지 짚어주는 역할
@@ -37,7 +37,7 @@
 데이터에서 드러나는 주요 트렌드를 요약하고, 분석 방법론의 한계나 놓친 변수들을 비평하세요. 
 경영진이 의사결정에 참고할 수 있도록 '강점 / 약점 / 추가 검토 필요 영역'으로 구분해 주세요.
 ```
-![alt text](image-15.png)
+![alt text](./Media/chat/image-15.png)
 
 ### Council
 - 여러 "전문가 역할"을 동시에 불러내어 서로 다른 관점에서 토론·비평을 진행한 뒤, 최종적으로 합의된 결론을 제시하는 방식
@@ -46,7 +46,7 @@
 자동차보험의 최근 손해율 상승 원인을 내부적으로 분석하고, 이를 개선하기 위한 전략을 제안해 주세요.
 ```
 > **결과**
-![alt text](image-10.png)
+![alt text](./Media/chat/image-10.png)
 
 
 ## 분석가
@@ -56,18 +56,18 @@
 - Python 실행 가능: 복잡한 데이터 쿼리를 위해 Python 코드를 직접 실행하며, 사용자가 코드와 결과를 확인할 수 있습니다.
 >  엑셀 실습 파일 업로드 후 시스템 프롬프트에서 제공하는 프롬프트 선택
 
-![alt text](image-23.png)
+![alt text](./Media/chat/image-23.png)
 
 ## 앱 > 브랜드 키트
 앱 목록 및 브랜드 키트 데모
-![alt text](image-25.png)
+![alt text](./Media/chat/image-25.png)
 - 결과: BMW Style: **BeOneMedicines 회사소개서**
 - 결과: Customer Story: **brand-template-customer story**
 
 
 ## Agent Builder
 ### 생성
-![alt text](image-27.png)
+![alt text](./Media/chat/image-27.png)
 ```
 데이터 분석 지원 에이전트
 ```
