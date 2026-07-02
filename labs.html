@@ -32,22 +32,28 @@
     }
 
     .page {
+      --toc-width: 200px;
       width: 100%;
       max-width: none;
       margin: 0;
       padding: 20px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 20px;
+      grid-template-columns: var(--toc-width) 2px minmax(0, 1fr);
+      gap: 2px;
       align-items: start;
       position: relative;
+      transition: grid-template-columns 0.22s ease;
+    }
+
+    .page.toc-collapsed {
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .toc {
-      position: fixed;
+      position: sticky;
       top: 20px;
-      left: 0;
-      width: 230px;
+      left: auto;
+      width: 100%;
       max-height: calc(100vh - 40px);
       overflow: auto;
       background: var(--panel);
@@ -55,19 +61,112 @@
       border-radius: 14px;
       padding: 14px;
       z-index: 10;
-      transform: translateX(calc(-100% + 14px));
-      transition: transform 0.22s ease;
+      transition: opacity 0.16s ease;
     }
 
-    .toc:hover,
-    .toc:focus-within {
-      transform: translateX(0);
+    .toc.is-collapsed {
+      display: none;
+    }
+
+    .toc-resizer {
+      width: 1px;
+      min-height: calc(100vh - 40px);
+      border-radius: 999px;
+      background: rgba(15, 108, 189, 0.05);
+      cursor: col-resize;
+      touch-action: none;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
+      position: sticky;
+      top: 20px;
+      opacity: 0.06;
+      justify-self: center;
+    }
+
+    .toc-resizer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 100%;
+    }
+
+    .toc-resizer:hover,
+    .toc-resizer:focus-visible,
+    .toc-resizer.is-dragging {
+      background: rgba(15, 108, 189, 0.45);
+      opacity: 1;
+      outline: none;
+    }
+
+    .page.toc-collapsed .toc-resizer {
+      display: none;
+    }
+
+    .toc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
 
     .toc h2 {
       margin: 0 0 12px;
       font-size: 1rem;
       color: var(--accent);
+    }
+
+    .toc-title {
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 2px 4px;
+      margin: -2px -4px 10px;
+    }
+
+    .toc-title:hover,
+    .toc-title:focus-visible {
+      background: var(--accent-soft);
+      outline: none;
+    }
+
+    .toc-toggle-btn,
+    .toc-open-btn {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 5px 8px;
+      cursor: pointer;
+    }
+
+    .toc-toggle-btn {
+      margin-bottom: 12px;
+    }
+
+    .toc-open-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 11;
+      display: none;
+    }
+
+    .toc-open-btn.is-visible {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toc-toggle-btn:hover,
+    .toc-toggle-btn:focus-visible,
+    .toc-open-btn:hover,
+    .toc-open-btn:focus-visible {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      outline: none;
     }
 
     .toc ol {
@@ -84,7 +183,7 @@
       display: block;
       text-decoration: none;
       color: var(--muted);
-      font-size: 0.92rem;
+      font-size: 0.7rem;
       line-height: 1.35;
       padding: 6px 8px;
       border-radius: 8px;
@@ -140,6 +239,33 @@
       gap: 8px;
     }
 
+    .doc-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .doc-selector label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .doc-selector select {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 0.82rem;
+      border-radius: 8px;
+      padding: 6px 8px;
+      min-width: 170px;
+    }
+
+    .doc-selector select:focus-visible {
+      outline: 2px solid var(--accent-soft);
+      border-color: var(--accent);
+    }
+
     .toggle-all-btn {
       border: 1px solid var(--line);
       background: #ffffff;
@@ -191,6 +317,10 @@
       user-select: none;
       transition: background-color 0.15s ease;
       padding-right: 42px;
+    }
+
+    #doc h2:has(+ .tips-panel) {
+      margin-bottom: 0.25em;
     }
 
     #doc h2:hover,
@@ -316,12 +446,20 @@
     }
 
     #doc .tips-panel {
-      margin: 1.1em 0;
-      padding: 0.9em 1em;
+      margin: 0.65em 0;
+      padding: 0.72em 0.9em;
       border: 1px solid #b8d4ee;
       border-left: 5px solid var(--accent);
       border-radius: 12px;
       background: linear-gradient(180deg, #f3f9ff 0%, #eef6ff 100%);
+    }
+
+    #doc h2 + .tips-panel {
+      margin-top: 0.3em;
+    }
+
+    #doc .tips-panel + h2 {
+      margin-top: 0.6em;
     }
 
     #doc .tips-panel > h1,
@@ -356,11 +494,23 @@
         grid-template-columns: 1fr;
       }
 
+      .page.toc-collapsed {
+        grid-template-columns: 1fr;
+      }
+
       .toc {
         position: static;
-        transform: none;
         max-height: none;
         width: auto;
+      }
+
+      .toc-resizer {
+        display: none;
+      }
+
+      .toc-open-btn {
+        top: 12px;
+        left: 12px;
       }
     }
   </style>
@@ -368,19 +518,28 @@
 <body>
   <div class="page">
     <aside class="toc" aria-label="문서 목차">
-      <h2>목차</h2>
+      <div class="toc-header">
+        <h2 id="toc-title" class="toc-title" role="button" tabindex="0" aria-label="컨텐츠 최상단으로 이동">목차</h2>
+        <button id="toc-toggle-btn" class="toc-toggle-btn" type="button" aria-label="목차 접기">접기</button>
+      </div>
       <ol id="toc-list"></ol>
     </aside>
+    <div id="toc-resizer" class="toc-resizer" role="separator" aria-orientation="vertical" aria-label="목차 너비 조절"></div>
+    <button id="toc-open-btn" class="toc-open-btn" type="button" aria-label="목차 열기">목차</button>
 
     <main class="content">
       <div class="topbar">
-        <h1>Labs</h1>
+        <h1 id="page-title">Labs</h1>
         <div class="topbar-actions">
+          <div class="doc-selector">
+            <label for="doc-select">문서</label>
+            <select id="doc-select" aria-label="표시할 랩 문서 선택"></select>
+          </div>
           <button id="toggle-all-btn" class="toggle-all-btn" type="button" aria-label="모두 접기">모두 접기</button>
           <a href="index.html">Home</a>
         </div>
       </div>
-      <div id="doc" class="loading">Labs.md를 불러오는 중입니다...</div>
+      <div id="doc" class="loading">문서를 불러오는 중입니다...</div>
     </main>
   </div>
 
@@ -429,8 +588,9 @@
       list.innerHTML = "";
 
       const used = new Map();
+      const visibleHeadings = headings.filter((h) => h.level >= 2);
 
-      headings.forEach((h) => {
+      visibleHeadings.forEach((h) => {
         const base = slugify(h.text) || "section";
         const count = (used.get(base) || 0) + 1;
         used.set(base, count);
@@ -448,7 +608,7 @@
         list.appendChild(li);
       });
 
-      return headings;
+      return visibleHeadings;
     }
 
     async function copyText(text) {
@@ -505,9 +665,7 @@
       const headings = root.querySelectorAll("h1, h2, h3, h4");
 
       headings.forEach((heading) => {
-        const text = heading.textContent.trim().toLowerCase();
-        const normalized = text.replace(/\s+/g, " ");
-        if (!normalized.includes("tips & tricks") && !normalized.includes("tips and tricks")) {
+        if (heading.tagName !== "H3") {
           return;
         }
 
@@ -650,6 +808,114 @@
       };
     }
 
+    function setupTocToggle() {
+      const page = document.querySelector(".page");
+      const toc = document.querySelector(".toc");
+      const toggleBtn = document.getElementById("toc-toggle-btn");
+      const openBtn = document.getElementById("toc-open-btn");
+      if (!page || !toc || !toggleBtn || !openBtn) {
+        return;
+      }
+
+      const setCollapsed = (collapsed) => {
+        toc.classList.toggle("is-collapsed", collapsed);
+        page.classList.toggle("toc-collapsed", collapsed);
+        openBtn.classList.toggle("is-visible", collapsed);
+        toggleBtn.setAttribute("aria-label", collapsed ? "목차 열기" : "목차 접기");
+        toggleBtn.textContent = collapsed ? "열기" : "접기";
+      };
+
+      toggleBtn.addEventListener("click", () => {
+        const collapsed = !toc.classList.contains("is-collapsed");
+        setCollapsed(collapsed);
+      });
+
+      openBtn.addEventListener("click", () => {
+        setCollapsed(false);
+      });
+
+      setCollapsed(false);
+    }
+
+    function setupTocTitleJump() {
+      const tocTitle = document.getElementById("toc-title");
+      const content = document.querySelector(".content");
+      if (!tocTitle || !content) {
+        return;
+      }
+
+      const jumpToTop = () => {
+        content.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+
+      tocTitle.addEventListener("click", jumpToTop);
+      tocTitle.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+
+        event.preventDefault();
+        jumpToTop();
+      });
+    }
+
+    function setupTocResizer() {
+      const page = document.querySelector(".page");
+      const resizer = document.getElementById("toc-resizer");
+      if (!page || !resizer) {
+        return;
+      }
+
+      let isDragging = false;
+      let activePointerId = null;
+
+      const clampWidth = (rawWidth) => {
+        const min = 180;
+        const max = Math.min(520, Math.max(260, Math.floor(window.innerWidth * 0.5)));
+        return Math.max(min, Math.min(max, rawWidth));
+      };
+
+      const onPointerMove = (event) => {
+        if (!isDragging) {
+          return;
+        }
+
+        const nextWidth = clampWidth(event.clientX - 20);
+        page.style.setProperty("--toc-width", `${nextWidth}px`);
+      };
+
+      const onPointerUp = () => {
+        if (!isDragging) {
+          return;
+        }
+
+        isDragging = false;
+        resizer.classList.remove("is-dragging");
+        document.body.style.userSelect = "";
+
+        if (activePointerId !== null) {
+          resizer.releasePointerCapture?.(activePointerId);
+          activePointerId = null;
+        }
+      };
+
+      resizer.addEventListener("pointerdown", (event) => {
+        if (window.matchMedia("(max-width: 760px)").matches) {
+          return;
+        }
+
+        isDragging = true;
+        activePointerId = event.pointerId;
+        resizer.classList.add("is-dragging");
+        document.body.style.userSelect = "none";
+        resizer.setPointerCapture?.(event.pointerId);
+      });
+
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", onPointerUp);
+      window.addEventListener("pointercancel", onPointerUp);
+    }
+
     function enableH2Collapsible(root) {
       const h2Headings = root.querySelectorAll("h2");
       const toggleAllBtn = document.getElementById("toggle-all-btn");
@@ -688,13 +954,65 @@
       syncToggleAllButton();
     }
 
+    const LAB_DOCS = [
+      "01.Chat.md",
+      "02.Word.md",
+      "03.Excel.md",
+      "04.PPT.md",
+      "05.AgentBuilder.md"
+    ];
+
+    function resolveRequestedDoc() {
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get("doc");
+      if (!requested) {
+        return LAB_DOCS[0];
+      }
+
+      const matched = LAB_DOCS.find((file) => file === requested);
+      return matched || LAB_DOCS[0];
+    }
+
+    function formatDocLabel(fileName) {
+      return fileName.replace(/\.md$/i, "");
+    }
+
+    function syncDocSelector(selectedDoc) {
+      const select = document.getElementById("doc-select");
+      if (!select) {
+        return;
+      }
+
+      if (!select.dataset.initialized) {
+        select.innerHTML = "";
+        LAB_DOCS.forEach((file) => {
+          const option = document.createElement("option");
+          option.value = file;
+          option.textContent = formatDocLabel(file);
+          select.appendChild(option);
+        });
+
+        select.addEventListener("change", () => {
+          const params = new URLSearchParams(window.location.search);
+          params.set("doc", select.value);
+          window.location.search = params.toString();
+        });
+
+        select.dataset.initialized = "true";
+      }
+
+      select.value = selectedDoc;
+    }
+
     async function render() {
       const doc = document.getElementById("doc");
 
       try {
-        const response = await fetch("Labs.md", { cache: "no-cache" });
+        const selectedDoc = resolveRequestedDoc();
+        syncDocSelector(selectedDoc);
+        const response = await fetch(selectedDoc, { cache: "no-cache" });
         if (!response.ok) {
-          throw new Error(`Labs.md 로드 실패: ${response.status}`);
+          throw new Error(`${selectedDoc} 로드 실패: ${response.status}`);
         }
 
         const markdown = await response.text();
@@ -706,7 +1024,23 @@
           breaks: false
         });
 
-        const renderedHeadings = doc.querySelectorAll("h1, h2, h3, h4");
+        const pageTitleElement = document.getElementById("page-title");
+        const firstLevelTitle = doc.querySelector("h1");
+        const displayTitle = firstLevelTitle
+          ? firstLevelTitle.textContent.trim()
+          : formatDocLabel(selectedDoc);
+
+        if (pageTitleElement) {
+          pageTitleElement.textContent = displayTitle;
+        }
+
+        document.title = `${displayTitle} - Labs`;
+
+        if (firstLevelTitle) {
+          firstLevelTitle.remove();
+        }
+
+        const renderedHeadings = doc.querySelectorAll("h2, h3, h4");
         headings.forEach((h, index) => {
           if (renderedHeadings[index]) {
             renderedHeadings[index].id = h.id;
@@ -724,6 +1058,9 @@
     }
 
     render();
+    setupTocToggle();
+    setupTocResizer();
+    setupTocTitleJump();
   </script>
 </body>
 </html>

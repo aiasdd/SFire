@@ -99,6 +99,44 @@
       font-size: 0.94rem;
     }
 
+    .card-link-list {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      scrollbar-width: thin;
+      padding-bottom: 2px;
+    }
+
+    .card-link-list li {
+      flex: 0 0 auto;
+    }
+
+    .card-link-list a {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.88rem;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 6px 8px;
+      background: rgba(255, 255, 255, 0.03);
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .card-link-list a:hover,
+    .card-link-list a:focus-visible {
+      border-color: var(--accent);
+      background: rgba(34, 211, 238, 0.12);
+      outline: none;
+    }
+
     .badge {
       display: inline-block;
       margin-top: 8px;
@@ -132,6 +170,44 @@
       margin: 0 0 8px;
       font-size: 1.02rem;
       color: #f8fafc;
+    }
+
+    .file-panel-toggle {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #f8fafc;
+      padding: 0;
+      margin: 0 0 8px;
+      font-size: 1.02rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .file-panel-toggle::after {
+      content: "▸";
+      color: var(--muted);
+      font-size: 0.9rem;
+      transition: transform 0.15s ease;
+    }
+
+    .file-panel-toggle[aria-expanded="true"]::after {
+      transform: rotate(90deg);
+    }
+
+    .file-panel-toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    .file-panel-body[hidden] {
+      display: none;
     }
 
     .file-list {
@@ -181,9 +257,17 @@
     -->
 
     <section class="links" aria-label="Navigation Links">
-      <a class="card-link" href="labs.html">
+      <div class="card-link" role="group" aria-label="Labs 문서 링크">
         <strong>Labs</strong>
-      </a>
+
+        <ul class="card-link-list" aria-label="Labs markdown files">
+          <li><a href="labs.html?doc=01.Chat.md">01.Chat</a></li>
+          <li><a href="labs.html?doc=02.Word.md">02.Word</a></li>
+          <li><a href="labs.html?doc=03.Excel.md">03.Excel</a></li>
+          <li><a href="labs.html?doc=04.PPT.md">04.PPT</a></li>
+          <li><a href="labs.html?doc=05.AgentBuilder.md">05.AgentBuilder</a></li>
+        </ul>
+      </div>
 
       <a class="card-link" href="slides.html">
         <strong>Slides</strong>
@@ -192,13 +276,33 @@
 
     <section class="file-panels" aria-label="File Links">
       <article class="file-panel" aria-labelledby="labfiles-title">
-        <h2 id="labfiles-title">Labfiles</h2>
-        <ul id="labfiles-list" class="file-list"></ul>
+        <button
+          id="labfiles-title"
+          class="file-panel-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="labfiles-body"
+        >
+          Labfiles
+        </button>
+        <div id="labfiles-body" class="file-panel-body" hidden>
+          <ul id="labfiles-list" class="file-list"></ul>
+        </div>
       </article>
 
       <article class="file-panel" aria-labelledby="clips-title">
-        <h2 id="clips-title">Clips</h2>
-        <ul id="clips-list" class="file-list"></ul>
+        <button
+          id="clips-title"
+          class="file-panel-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="clips-body"
+        >
+          Clips
+        </button>
+        <div id="clips-body" class="file-panel-body" hidden>
+          <ul id="clips-list" class="file-list"></ul>
+        </div>
       </article>
     </section>
   </main>
@@ -253,8 +357,27 @@
       });
     }
 
+    function enableFilePanelsToggle() {
+      const toggles = document.querySelectorAll(".file-panel-toggle");
+
+      toggles.forEach((toggle) => {
+        const bodyId = toggle.getAttribute("aria-controls");
+        const panelBody = bodyId ? document.getElementById(bodyId) : null;
+        if (!panelBody) {
+          return;
+        }
+
+        toggle.addEventListener("click", () => {
+          const expanded = toggle.getAttribute("aria-expanded") === "true";
+          toggle.setAttribute("aria-expanded", String(!expanded));
+          panelBody.hidden = expanded;
+        });
+      });
+    }
+
     renderFileList("labfiles-list", "Labfiles", filesByFolder.Labfiles);
     renderFileList("clips-list", "Clips", filesByFolder.Clips);
+    enableFilePanelsToggle();
   </script>
 </body>
 </html>

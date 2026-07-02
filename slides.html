@@ -102,6 +102,113 @@
       gap: 10px;
     }
 
+    .toc-home-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .toc-home-toggle,
+    .toc-home-go {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    }
+
+    .toc-home-toggle {
+      width: 100%;
+      min-width: 0;
+      cursor: pointer;
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      justify-content: flex-start;
+    }
+
+    .toc-home-go {
+      text-decoration: none;
+      justify-content: center;
+      min-width: 42px;
+      padding: 5px 8px;
+    }
+
+    .toc-home-go::after {
+      content: "↗";
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .toc-home-toggle:hover,
+    .toc-home-toggle:focus-visible,
+    .toc-home-go:hover,
+    .toc-home-go:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(56, 189, 248, 0.46);
+      background: rgba(56, 189, 248, 0.12);
+      outline: none;
+    }
+
+    .toc-section {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .toc-section-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+    }
+
+    .toc-section-toggle::after {
+      content: "▾";
+      font-size: 0.78rem;
+      color: var(--muted);
+      transition: transform 0.15s ease;
+    }
+
+    .toc-section-toggle[aria-expanded="false"]::after {
+      transform: rotate(-90deg);
+    }
+
+    .toc-section-toggle:hover,
+    .toc-section-toggle:focus-visible {
+      border-color: rgba(56, 189, 248, 0.46);
+      background: rgba(56, 189, 248, 0.12);
+      outline: none;
+    }
+
+    .toc-section-body {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .toc-section-body[hidden] {
+      display: none;
+    }
+
     .toc-item {
       display: grid;
       grid-template-columns: 1fr;
@@ -405,7 +512,18 @@
 
   <script>
     const totalPages = 40;
-    const state = { page: 1 };
+    // Add slide numbers here to hide them from sidebar and navigation.
+    const hiddenSlideNumbers = [];
+
+    const hiddenSlides = new Set(hiddenSlideNumbers);
+    const visiblePages = Array.from({ length: totalPages }, (_, index) => index + 1)
+      .filter((page) => !hiddenSlides.has(page));
+
+    if (!visiblePages.length) {
+      throw new Error("All slides are hidden. Please keep at least one visible slide.");
+    }
+
+    const state = { page: visiblePages[0] };
 
     const pageImage = document.getElementById("pageImage");
     const pageIndicator = document.getElementById("pageIndicator");
@@ -420,8 +538,37 @@
     const label = (value) => String(value).padStart(2, "0");
 
     const tocButtons = new Map();
+    const pageToSection = new Map();
+    const sectionBodies = new Map();
+    const sectionToggles = new Map();
     const imageCache = new Map();
     let renderToken = 0;
+
+    const sectionStarts = [1, 6, 15, 26];
+    const sectionDefinitions = sectionStarts.map((start, index) => {
+      const nextStart = sectionStarts[index + 1];
+      const end = nextStart ? nextStart - 1 : totalPages;
+      const id = String(index + 1).padStart(2, "0");
+      return {
+        id,
+        title: `Section ${id}`,
+        start,
+        end
+      };
+    });
+
+    function getVisibleIndex(page) {
+      return visiblePages.indexOf(page);
+    }
+
+    function getSafePage(page) {
+      if (visiblePages.includes(page)) {
+        return page;
+      }
+
+      const nextVisible = visiblePages.find((value) => value >= page);
+      return nextVisible || visiblePages[visiblePages.length - 1];
+    }
 
     function preloadPage(page) {
       if (page < 1 || page > totalPages) {
@@ -445,39 +592,125 @@
     }
 
     function prewarmNeighbors(page) {
-      preloadPage(page - 1);
-      preloadPage(page + 1);
+      const index = getVisibleIndex(page);
+      if (index < 0) {
+        return;
+      }
+
+      preloadPage(visiblePages[index - 1]);
+      preloadPage(visiblePages[index + 1]);
     }
 
     function buildSidebar() {
-      for (let page = 1; page <= totalPages; page += 1) {
-        const item = document.createElement("button");
-        item.type = "button";
-        item.className = "toc-item";
-        item.dataset.page = String(page);
-        item.setAttribute("aria-label", `Page ${label(page)}`);
+      tocList.innerHTML = "";
 
-        const thumb = document.createElement("div");
-        thumb.className = "toc-thumb";
+      const homeRow = document.createElement("div");
+      homeRow.className = "toc-home-row";
 
-        const image = document.createElement("img");
-        image.src = `Media/page-${pad(page)}.png`;
-        image.alt = `Page ${page} preview`;
-        image.loading = "lazy";
+      const homeToggle = document.createElement("button");
+      homeToggle.type = "button";
+      homeToggle.className = "toc-home-toggle";
+      homeToggle.textContent = "⇅";
+      homeToggle.setAttribute("aria-label", "목차 일괄 접기 또는 펼치기");
 
-        thumb.appendChild(image);
+      const homeGo = document.createElement("a");
+      homeGo.className = "toc-home-go";
+      homeGo.href = "index.html";
+      homeGo.setAttribute("aria-label", "Home으로 이동");
 
-        item.appendChild(thumb);
+      homeRow.appendChild(homeToggle);
+      homeRow.appendChild(homeGo);
+      tocList.appendChild(homeRow);
 
-        item.addEventListener("click", () => renderPage(page));
-        tocList.appendChild(item);
-        tocButtons.set(page, item);
-      }
+      sectionDefinitions.forEach((section) => {
+        const sectionPages = visiblePages.filter((page) => page >= section.start && page <= section.end);
+        if (!sectionPages.length) {
+          return;
+        }
+
+        const sectionElement = document.createElement("section");
+        sectionElement.className = "toc-section";
+
+        const toggle = document.createElement("button");
+        const bodyId = `toc-section-${section.id}`;
+        toggle.type = "button";
+        toggle.className = "toc-section-toggle";
+        toggle.textContent = section.title;
+        toggle.setAttribute("aria-expanded", "true");
+        toggle.setAttribute("aria-controls", bodyId);
+
+        const body = document.createElement("div");
+        body.id = bodyId;
+        body.className = "toc-section-body";
+
+        toggle.addEventListener("click", () => {
+          const expanded = toggle.getAttribute("aria-expanded") === "true";
+          toggle.setAttribute("aria-expanded", String(!expanded));
+          body.hidden = expanded;
+        });
+
+        sectionPages.forEach((page) => {
+          const item = document.createElement("button");
+          item.type = "button";
+          item.className = "toc-item";
+          item.dataset.page = String(page);
+          item.setAttribute("aria-label", `Page ${label(page)}`);
+
+          const thumb = document.createElement("div");
+          thumb.className = "toc-thumb";
+
+          const image = document.createElement("img");
+          image.src = `Media/page-${pad(page)}.png`;
+          image.alt = `Page ${page} preview`;
+          image.loading = "lazy";
+
+          thumb.appendChild(image);
+          item.appendChild(thumb);
+
+          item.addEventListener("click", () => renderPage(page));
+          body.appendChild(item);
+
+          tocButtons.set(page, item);
+          pageToSection.set(page, section.id);
+        });
+
+        sectionBodies.set(section.id, body);
+        sectionToggles.set(section.id, toggle);
+
+        sectionElement.appendChild(toggle);
+        sectionElement.appendChild(body);
+        tocList.appendChild(sectionElement);
+      });
+
+      homeToggle.addEventListener("click", () => {
+        const hasExpanded = Array.from(sectionBodies.values()).some((body) => !body.hidden);
+        const shouldExpandAll = !hasExpanded;
+
+        for (const [sectionId, body] of sectionBodies.entries()) {
+          const toggle = sectionToggles.get(sectionId);
+          if (!toggle) {
+            continue;
+          }
+
+          body.hidden = !shouldExpandAll;
+          toggle.setAttribute("aria-expanded", String(shouldExpandAll));
+        }
+      });
     }
 
     function setActiveSidebar(page) {
       for (const [itemPage, element] of tocButtons.entries()) {
         element.classList.toggle("active", itemPage === page);
+      }
+
+      const sectionId = pageToSection.get(page);
+      if (sectionId) {
+        const body = sectionBodies.get(sectionId);
+        const toggle = sectionToggles.get(sectionId);
+        if (body && toggle && body.hidden) {
+          body.hidden = false;
+          toggle.setAttribute("aria-expanded", "true");
+        }
       }
 
       const active = tocButtons.get(page);
@@ -487,36 +720,40 @@
     }
 
     async function renderPage(page) {
-      state.page = page;
+      const safePage = getSafePage(page);
+      state.page = safePage;
       const currentToken = ++renderToken;
-      const fileName = `Media/page-${pad(page)}.png`;
+      const fileName = `Media/page-${pad(safePage)}.png`;
+      const visibleIndex = getVisibleIndex(safePage);
 
-      await preloadPage(page);
+      await preloadPage(safePage);
       if (currentToken !== renderToken) {
         return;
       }
 
       pageImage.src = fileName;
-      pageImage.alt = `Page ${page}`;
-      pageIndicator.textContent = `${page} / ${totalPages}`;
-      prevBtn.disabled = page === 1;
-      stagePrev.disabled = page === 1;
-      nextBtn.disabled = page === totalPages;
-      stageNext.disabled = page === totalPages;
-      location.hash = `page-${pad(page)}`;
-      setActiveSidebar(page);
-      prewarmNeighbors(page);
+      pageImage.alt = `Page ${safePage}`;
+      pageIndicator.textContent = `${visibleIndex + 1} / ${visiblePages.length}`;
+      prevBtn.disabled = visibleIndex <= 0;
+      stagePrev.disabled = visibleIndex <= 0;
+      nextBtn.disabled = visibleIndex >= visiblePages.length - 1;
+      stageNext.disabled = visibleIndex >= visiblePages.length - 1;
+      location.hash = `page-${pad(safePage)}`;
+      setActiveSidebar(safePage);
+      prewarmNeighbors(safePage);
     }
 
     function goPrev() {
-      if (state.page > 1) {
-        renderPage(state.page - 1);
+      const index = getVisibleIndex(state.page);
+      if (index > 0) {
+        renderPage(visiblePages[index - 1]);
       }
     }
 
     function goNext() {
-      if (state.page < totalPages) {
-        renderPage(state.page + 1);
+      const index = getVisibleIndex(state.page);
+      if (index >= 0 && index < visiblePages.length - 1) {
+        renderPage(visiblePages[index + 1]);
       }
     }
 
@@ -592,9 +829,13 @@
 
     const initialPage = (() => {
       const hash = location.hash.match(/page-(\d{3})/);
-      if (!hash) return 1;
+      if (!hash) return visiblePages[0];
       const parsed = Number(hash[1]);
-      return Number.isFinite(parsed) && parsed >= 1 && parsed <= totalPages ? parsed : 1;
+      if (!Number.isFinite(parsed) || parsed < 1 || parsed > totalPages) {
+        return visiblePages[0];
+      }
+
+      return getSafePage(parsed);
     })();
 
     buildSidebar();
