@@ -203,12 +203,91 @@
     .toc .level-4 a { padding-left: 26px; }
 
     .content {
+      position: relative;
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: clamp(18px, 3vw, 34px);
       min-height: calc(100vh - 40px);
       overflow: hidden;
+    }
+
+    .doc-edge-nav {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 12px;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      z-index: 5;
+      opacity: 0.14;
+      transition: opacity 0.15s ease, background-color 0.15s ease;
+    }
+
+    .doc-edge-nav::before {
+      content: "";
+      position: absolute;
+      top: 12px;
+      bottom: 12px;
+      left: 50%;
+      width: 2px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: linear-gradient(180deg, transparent 0%, rgba(15, 108, 189, 0.85) 18%, rgba(15, 108, 189, 0.85) 82%, transparent 100%);
+    }
+
+    .doc-edge-nav::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      transform: translateY(-50%);
+      opacity: 0.9;
+    }
+
+    .doc-edge-nav.prev {
+      left: 0;
+      border-top-left-radius: 14px;
+      border-bottom-left-radius: 14px;
+    }
+
+    .doc-edge-nav.prev::after {
+      left: 2px;
+      border-right: 8px solid rgba(15, 108, 189, 0.9);
+    }
+
+    .doc-edge-nav.next {
+      right: 0;
+      border-top-right-radius: 14px;
+      border-bottom-right-radius: 14px;
+    }
+
+    .doc-edge-nav.next::after {
+      right: 2px;
+      border-left: 8px solid rgba(15, 108, 189, 0.9);
+    }
+
+    .doc-edge-nav:hover,
+    .doc-edge-nav:focus-visible {
+      opacity: 0.75;
+      background: linear-gradient(90deg, rgba(232, 242, 252, 0.65), rgba(232, 242, 252, 0));
+      outline: none;
+    }
+
+    .doc-edge-nav.next:hover,
+    .doc-edge-nav.next:focus-visible {
+      background: linear-gradient(270deg, rgba(232, 242, 252, 0.65), rgba(232, 242, 252, 0));
+    }
+
+    .doc-edge-nav:disabled {
+      cursor: default;
+      opacity: 0.05;
+      pointer-events: none;
     }
 
     .topbar {
@@ -539,6 +618,8 @@
           <a href="index.html">Home</a>
         </div>
       </div>
+      <button id="doc-prev-btn" class="doc-edge-nav prev" type="button" aria-label="이전 문서로 이동"></button>
+      <button id="doc-next-btn" class="doc-edge-nav next" type="button" aria-label="다음 문서로 이동"></button>
       <div id="doc" class="loading">문서를 불러오는 중입니다...</div>
     </main>
   </div>
@@ -978,6 +1059,47 @@
       return fileName.replace(/\.md$/i, "");
     }
 
+    function getDocIndex(docName) {
+      return LAB_DOCS.indexOf(docName);
+    }
+
+    function getAdjacentDoc(docName, direction) {
+      const index = getDocIndex(docName);
+      if (index === -1) {
+        return LAB_DOCS[0];
+      }
+
+      const nextIndex = (index + direction + LAB_DOCS.length) % LAB_DOCS.length;
+      return LAB_DOCS[nextIndex];
+    }
+
+    function navigateToDoc(docName) {
+      const params = new URLSearchParams(window.location.search);
+      params.set("doc", docName);
+      window.location.search = params.toString();
+    }
+
+    function syncDocEdgeNav(selectedDoc) {
+      const prevBtn = document.getElementById("doc-prev-btn");
+      const nextBtn = document.getElementById("doc-next-btn");
+
+      if (!prevBtn || !nextBtn) {
+        return;
+      }
+
+      const prevDoc = getAdjacentDoc(selectedDoc, -1);
+      const nextDoc = getAdjacentDoc(selectedDoc, 1);
+
+      prevBtn.disabled = false;
+      nextBtn.disabled = false;
+
+      prevBtn.setAttribute("aria-label", `${formatDocLabel(prevDoc)} 문서로 이동`);
+      nextBtn.setAttribute("aria-label", `${formatDocLabel(nextDoc)} 문서로 이동`);
+
+      prevBtn.onclick = () => navigateToDoc(prevDoc);
+      nextBtn.onclick = () => navigateToDoc(nextDoc);
+    }
+
     function syncDocSelector(selectedDoc) {
       const select = document.getElementById("doc-select");
       if (!select) {
@@ -994,9 +1116,7 @@
         });
 
         select.addEventListener("change", () => {
-          const params = new URLSearchParams(window.location.search);
-          params.set("doc", select.value);
-          window.location.search = params.toString();
+          navigateToDoc(select.value);
         });
 
         select.dataset.initialized = "true";
@@ -1011,6 +1131,7 @@
       try {
         const selectedDoc = resolveRequestedDoc();
         syncDocSelector(selectedDoc);
+        syncDocEdgeNav(selectedDoc);
         const response = await fetch(selectedDoc, { cache: "no-cache" });
         if (!response.ok) {
           throw new Error(`${selectedDoc} 로드 실패: ${response.status}`);
