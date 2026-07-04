@@ -203,22 +203,29 @@
 
     .content {
       position: relative;
+      display: flex;
+      flex-direction: column;
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: clamp(18px, 3vw, 34px);
-      min-height: calc(100vh - 40px);
+      height: calc(100vh - 40px);
       overflow: hidden;
     }
 
     .doc-stage {
-      position: absolute;
-      top: 64px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      pointer-events: none;
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
       z-index: 2;
+    }
+
+    .doc-nav-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
     }
 
     .doc-edge-nav {
@@ -326,6 +333,7 @@
     }
 
     #doc {
+      position: relative;
       line-height: 1.7;
       word-break: keep-all;
     }
@@ -629,9 +637,11 @@
         </div>
       </div>
       <div class="doc-stage">
-        <button id="doc-prev-btn" class="doc-edge-nav prev" type="button" aria-label="이전 문서로 이동"></button>
-        <button id="doc-next-btn" class="doc-edge-nav next" type="button" aria-label="다음 문서로 이동"></button>
         <div id="doc" class="loading">문서를 불러오는 중입니다...</div>
+        <div class="doc-nav-layer" aria-hidden="true">
+          <button id="doc-prev-btn" class="doc-edge-nav prev" type="button" aria-label="이전 문서로 이동"></button>
+          <button id="doc-next-btn" class="doc-edge-nav next" type="button" aria-label="다음 문서로 이동"></button>
+        </div>
       </div>
     </main>
   </div>
@@ -1109,6 +1119,7 @@
       "03.Excel.md",
       "04.PPT.md",
       "05.AgentBuilder.md"
+      //"05.AgentBuilder.md"
     ];
 
     function resolveRequestedDoc() {
@@ -1250,7 +1261,10 @@
     const imageLightbox = document.getElementById("image-lightbox");
     if (imageLightbox) {
       imageLightbox.addEventListener("click", (event) => {
-        if (event.target.closest("[data-lightbox-close]")) {
+        if (
+          event.target.closest("[data-lightbox-close]") ||
+          event.target === document.getElementById("lightbox-image")
+        ) {
           closeImageLightbox();
         }
       });
