@@ -415,11 +415,65 @@
     }
 
     #doc img {
+      cursor: zoom-in;
       max-width: 100%;
       border-radius: 10px;
       border: 1px solid var(--line);
       display: block;
       margin: 10px 0;
+    }
+
+    .image-lightbox {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(8, 15, 29, 0.82);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .image-lightbox.is-open {
+      display: flex;
+    }
+
+    .image-lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+    }
+
+    .image-lightbox-content {
+      position: relative;
+      z-index: 1;
+      max-width: min(96vw, 1400px);
+      max-height: 92vh;
+      display: grid;
+      gap: 10px;
+    }
+
+    .image-lightbox img {
+      display: block;
+      max-width: 100%;
+      max-height: 84vh;
+      width: auto;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+      background: rgba(255, 255, 255, 0.98);
+      cursor: zoom-out;
+    }
+
+    .image-lightbox-caption {
+      color: rgba(229, 238, 251, 0.84);
+      text-align: center;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      max-width: 96vw;
+      word-break: keep-all;
     }
 
     #doc pre {
@@ -582,6 +636,14 @@
     </main>
   </div>
 
+  <div id="image-lightbox" class="image-lightbox" aria-hidden="true">
+    <div class="image-lightbox-backdrop" data-lightbox-close></div>
+    <div class="image-lightbox-content" role="dialog" aria-modal="true" aria-label="이미지 확대 보기">
+      <img id="lightbox-image" alt="" />
+      <div id="lightbox-caption" class="image-lightbox-caption"></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     function slugify(text) {
@@ -665,6 +727,53 @@
       textarea.select();
       document.execCommand("copy");
       document.body.removeChild(textarea);
+    }
+
+    function openImageLightbox(src, alt) {
+      const lightbox = document.getElementById("image-lightbox");
+      const image = document.getElementById("lightbox-image");
+      const caption = document.getElementById("lightbox-caption");
+
+      if (!lightbox || !image || !caption) {
+        return;
+      }
+
+      image.src = src;
+      image.alt = alt || "확대된 이미지";
+      caption.textContent = alt || "";
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeImageLightbox() {
+      const lightbox = document.getElementById("image-lightbox");
+      const image = document.getElementById("lightbox-image");
+
+      if (!lightbox || !image) {
+        return;
+      }
+
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      image.removeAttribute("src");
+      image.alt = "";
+      document.body.style.overflow = "";
+    }
+
+    function bindImageLightbox(root) {
+      const images = root.querySelectorAll("img");
+
+      images.forEach((image) => {
+        if (image.dataset.lightboxBound === "true") {
+          return;
+        }
+
+        image.dataset.lightboxBound = "true";
+        image.addEventListener("click", () => {
+          openImageLightbox(image.currentSrc || image.src, image.alt);
+        });
+      });
     }
 
     function addCopyButtons(root) {
@@ -1131,11 +1240,27 @@
         enableH2Collapsible(doc);
         enableTocNavigation();
         addCopyButtons(doc);
+        bindImageLightbox(doc);
       } catch (error) {
         doc.className = "error";
         doc.textContent = `문서를 렌더링하지 못했습니다: ${error.message}`;
       }
     }
+
+    const imageLightbox = document.getElementById("image-lightbox");
+    if (imageLightbox) {
+      imageLightbox.addEventListener("click", (event) => {
+        if (event.target.closest("[data-lightbox-close]")) {
+          closeImageLightbox();
+        }
+      });
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeImageLightbox();
+      }
+    });
 
     render();
     setupTocToggle();
