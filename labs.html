@@ -212,82 +212,39 @@
       overflow: hidden;
     }
 
+    .doc-stage {
+      position: absolute;
+      top: 64px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     .doc-edge-nav {
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 12px;
+      width: 18%;
       border: 0;
-      background: transparent;
       padding: 0;
+      background: transparent;
       cursor: pointer;
-      z-index: 5;
-      opacity: 0.14;
-      transition: opacity 0.15s ease, background-color 0.15s ease;
-    }
-
-    .doc-edge-nav::before {
-      content: "";
-      position: absolute;
-      top: 12px;
-      bottom: 12px;
-      left: 50%;
-      width: 2px;
-      transform: translateX(-50%);
-      border-radius: 999px;
-      background: linear-gradient(180deg, transparent 0%, rgba(15, 108, 189, 0.85) 18%, rgba(15, 108, 189, 0.85) 82%, transparent 100%);
-    }
-
-    .doc-edge-nav::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 0;
-      height: 0;
-      border-top: 7px solid transparent;
-      border-bottom: 7px solid transparent;
-      transform: translateY(-50%);
-      opacity: 0.9;
+      pointer-events: auto;
+      opacity: 0;
     }
 
     .doc-edge-nav.prev {
       left: 0;
-      border-top-left-radius: 14px;
-      border-bottom-left-radius: 14px;
-    }
-
-    .doc-edge-nav.prev::after {
-      left: 2px;
-      border-right: 8px solid rgba(15, 108, 189, 0.9);
     }
 
     .doc-edge-nav.next {
       right: 0;
-      border-top-right-radius: 14px;
-      border-bottom-right-radius: 14px;
     }
 
-    .doc-edge-nav.next::after {
-      right: 2px;
-      border-left: 8px solid rgba(15, 108, 189, 0.9);
-    }
-
-    .doc-edge-nav:hover,
     .doc-edge-nav:focus-visible {
-      opacity: 0.75;
-      background: linear-gradient(90deg, rgba(232, 242, 252, 0.65), rgba(232, 242, 252, 0));
       outline: none;
-    }
-
-    .doc-edge-nav.next:hover,
-    .doc-edge-nav.next:focus-visible {
-      background: linear-gradient(270deg, rgba(232, 242, 252, 0.65), rgba(232, 242, 252, 0));
-    }
-
-    .doc-edge-nav:disabled {
-      cursor: default;
-      opacity: 0.05;
-      pointer-events: none;
     }
 
     .topbar {
@@ -618,9 +575,11 @@
           <a href="index.html">Home</a>
         </div>
       </div>
-      <button id="doc-prev-btn" class="doc-edge-nav prev" type="button" aria-label="이전 문서로 이동"></button>
-      <button id="doc-next-btn" class="doc-edge-nav next" type="button" aria-label="다음 문서로 이동"></button>
-      <div id="doc" class="loading">문서를 불러오는 중입니다...</div>
+      <div class="doc-stage">
+        <button id="doc-prev-btn" class="doc-edge-nav prev" type="button" aria-label="이전 문서로 이동"></button>
+        <button id="doc-next-btn" class="doc-edge-nav next" type="button" aria-label="다음 문서로 이동"></button>
+        <div id="doc" class="loading">문서를 불러오는 중입니다...</div>
+      </div>
     </main>
   </div>
 
