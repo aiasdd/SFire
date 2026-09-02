@@ -278,7 +278,41 @@
     .topbar-actions {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
       gap: 8px;
+    }
+
+    .topbar-doc-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .topbar-doc-nav button,
+    .topbar-doc-nav a {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .topbar-doc-nav button:hover,
+    .topbar-doc-nav button:focus-visible,
+    .topbar-doc-nav a:hover,
+    .topbar-doc-nav a:focus-visible {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      outline: none;
     }
 
     .doc-selector {
@@ -534,7 +568,39 @@
     }
 
     #doc :not(pre) > code {
-      font-family: Consolas, "Courier New", monospace;
+      font-family: "Segoe UI", "Noto Sans KR", sans-serif;
+      position: relative;
+      z-index: 4;
+      padding: 0.08em 0.28em;
+      background: #eef8ff;
+      cursor: copy;
+      border-radius: 4px;
+      transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #doc :not(pre) > code:hover,
+    #doc :not(pre) > code:focus-visible {
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+      outline: none;
+    }
+
+    #doc :not(pre) > code.is-copied::after {
+      content: "복사됨";
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 7px);
+      transform: translateX(-50%);
+      z-index: 6;
+      padding: 4px 7px;
+      border-radius: 5px;
+      background: var(--text);
+      color: #ffffff;
+      font-family: "Segoe UI", "Noto Sans KR", sans-serif;
+      font-size: 0.72rem;
+      line-height: 1;
+      white-space: nowrap;
+      pointer-events: none;
     }
 
     #doc table {
@@ -635,7 +701,11 @@
             <select id="doc-select" aria-label="표시할 랩 문서 선택"></select>
           </div>
           <button id="toggle-all-btn" class="toggle-all-btn" type="button" aria-label="모두 접기">모두 접기</button>
-          <a href="index.html">Home</a>
+          <nav class="topbar-doc-nav" aria-label="문서 이동">
+            <button id="top-doc-prev-btn" type="button" aria-label="이전 문서로 이동">이전</button>
+            <a href="index.html">Home</a>
+            <button id="top-doc-next-btn" type="button" aria-label="다음 문서로 이동">다음</button>
+          </nav>
         </div>
       </div>
       <div class="doc-stage">
@@ -818,6 +888,41 @@
         });
 
         pre.appendChild(button);
+      });
+    }
+
+    function bindInlineCodeCopy(root) {
+      const inlineCodes = root.querySelectorAll(":not(pre) > code");
+
+      inlineCodes.forEach((code) => {
+        code.setAttribute("role", "button");
+        code.setAttribute("tabindex", "0");
+        code.setAttribute("aria-label", `${code.textContent} 복사`);
+        code.title = "클릭하여 복사";
+
+        const copyInlineCode = async () => {
+          try {
+            await copyText(code.textContent);
+            code.classList.add("is-copied");
+            code.title = "복사됨";
+            window.setTimeout(() => {
+              code.classList.remove("is-copied");
+              code.title = "클릭하여 복사";
+            }, 1200);
+          } catch {
+            code.title = "복사 실패";
+          }
+        };
+
+        code.addEventListener("click", copyInlineCode);
+        code.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") {
+            return;
+          }
+
+          event.preventDefault();
+          copyInlineCode();
+        });
       });
     }
 
@@ -1114,14 +1219,30 @@
       syncToggleAllButton();
     }
 
-    const LAB_DOCS = [
-      "00.WorkIQ.md",
-      "01.Chat.md",
-      "02.Word.md",
-      "03.Excel.md",
-      "04.PPT.md",
-      "05.AgentBuilder.md"
+    const LAB_DOC_GROUPS = [
+      [
+        "00.WorkIQ.md",
+        "01.Chat.md",
+        "02.Word.md",
+        "03.Excel.md",
+        "04.PPT.md",
+        "05.AgentBuilder.md"
+      ],
+      [
+        "11.Excel.md",
+        "12.Word.md",
+        "13.PPT.md",
+        "14.Pages.md",
+        "15.FrontierAgents.md",
+        "16.AgentBuilder.md"
+      ]
     ];
+
+    const LAB_DOCS = LAB_DOC_GROUPS.flat();
+
+    function getDocGroup(docName) {
+      return LAB_DOC_GROUPS.find((group) => group.includes(docName)) || LAB_DOC_GROUPS[0];
+    }
 
     function resolveRequestedDoc() {
       const params = new URLSearchParams(window.location.search);
@@ -1139,17 +1260,18 @@
     }
 
     function getDocIndex(docName) {
-      return LAB_DOCS.indexOf(docName);
+      return getDocGroup(docName).indexOf(docName);
     }
 
     function getAdjacentDoc(docName, direction) {
+      const docGroup = getDocGroup(docName);
       const index = getDocIndex(docName);
       if (index === -1) {
-        return LAB_DOCS[0];
+        return docGroup[0];
       }
 
-      const nextIndex = (index + direction + LAB_DOCS.length) % LAB_DOCS.length;
-      return LAB_DOCS[nextIndex];
+      const nextIndex = (index + direction + docGroup.length) % docGroup.length;
+      return docGroup[nextIndex];
     }
 
     function navigateToDoc(docName) {
@@ -1159,24 +1281,33 @@
     }
 
     function syncDocEdgeNav(selectedDoc) {
-      const prevBtn = document.getElementById("doc-prev-btn");
-      const nextBtn = document.getElementById("doc-next-btn");
+      const prevButtons = [
+        document.getElementById("doc-prev-btn"),
+        document.getElementById("top-doc-prev-btn")
+      ].filter(Boolean);
+      const nextButtons = [
+        document.getElementById("doc-next-btn"),
+        document.getElementById("top-doc-next-btn")
+      ].filter(Boolean);
 
-      if (!prevBtn || !nextBtn) {
+      if (!prevButtons.length || !nextButtons.length) {
         return;
       }
 
       const prevDoc = getAdjacentDoc(selectedDoc, -1);
       const nextDoc = getAdjacentDoc(selectedDoc, 1);
 
-      prevBtn.disabled = false;
-      nextBtn.disabled = false;
+      prevButtons.forEach((button) => {
+        button.disabled = false;
+        button.setAttribute("aria-label", `${formatDocLabel(prevDoc)} 문서로 이동`);
+        button.onclick = () => navigateToDoc(prevDoc);
+      });
 
-      prevBtn.setAttribute("aria-label", `${formatDocLabel(prevDoc)} 문서로 이동`);
-      nextBtn.setAttribute("aria-label", `${formatDocLabel(nextDoc)} 문서로 이동`);
-
-      prevBtn.onclick = () => navigateToDoc(prevDoc);
-      nextBtn.onclick = () => navigateToDoc(nextDoc);
+      nextButtons.forEach((button) => {
+        button.disabled = false;
+        button.setAttribute("aria-label", `${formatDocLabel(nextDoc)} 문서로 이동`);
+        button.onclick = () => navigateToDoc(nextDoc);
+      });
     }
 
     function syncDocSelector(selectedDoc) {
@@ -1187,7 +1318,7 @@
 
       if (!select.dataset.initialized) {
         select.innerHTML = "";
-        LAB_DOCS.forEach((file) => {
+        getDocGroup(selectedDoc).forEach((file) => {
           const option = document.createElement("option");
           option.value = file;
           option.textContent = formatDocLabel(file);
@@ -1252,6 +1383,7 @@
         enableH2Collapsible(doc);
         enableTocNavigation();
         addCopyButtons(doc);
+        bindInlineCodeCopy(doc);
         bindImageLightbox(doc);
       } catch (error) {
         doc.className = "error";

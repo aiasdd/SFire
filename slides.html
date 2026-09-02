@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>202607v</title>
+  <title>Slides</title>
   <style>
     :root {
       color-scheme: light;
@@ -493,7 +493,7 @@
     <main class="main">
       <div class="viewer">
         <div class="frame" id="frame">
-          <img id="pageImage" class="page-image" alt="Page 1" src="Media/page-001.png" />
+          <img id="pageImage" class="page-image" alt="Page 1" />
           <button class="nav-hit prev" id="stagePrev" type="button" aria-label="이전 페이지"></button>
           <button class="nav-hit next" id="stageNext" type="button" aria-label="다음 페이지"></button>
         </div>
@@ -511,7 +511,39 @@
   </div>
 
   <script>
-    const totalPages = 40;
+    const deckConfigs = {
+      "202607v_SFire.md": {
+        title: "202607v",
+        totalPages: 40,
+        imageBase: "Media",
+        sections: [
+          { title: "Section 01", start: 1 },
+          { title: "Section 02", start: 6 },
+          { title: "Section 03", start: 15 },
+          { title: "Section 04", start: 26 }
+        ]
+      },
+      "202609v_SFire.md": {
+        title: "202609v",
+        totalPages: 42,
+        imageBase: "Media/202609",
+        sections: [
+          { title: "00 Agenda", start: 2 },
+          { title: "01 문서 작성 심화", start: 3 },
+          { title: "01-1 Excel", start: 5 },
+          { title: "01-2 Word", start: 11 },
+          { title: "01-2 PPT", start: 19 },
+          { title: "02 Pages", start: 24 },
+          { title: "03 Frontier Agents", start: 31 },
+          { title: "04 Agent Builder", start: 36 }
+        ]
+      }
+    };
+
+    const requestedDoc = new URLSearchParams(location.search).get("doc") || "202607v_SFire.md";
+    const deck = deckConfigs[requestedDoc] || deckConfigs["202607v_SFire.md"];
+    const totalPages = deck.totalPages;
+    document.title = deck.title;
     // Add slide numbers here to hide them from sidebar and navigation.
     const hiddenSlideNumbers = [];
 
@@ -536,6 +568,7 @@
 
     const pad = (value) => String(value).padStart(3, "0");
     const label = (value) => String(value).padStart(2, "0");
+    const getPageFileName = (page) => `${deck.imageBase}/page-${pad(page)}.png`;
 
     const tocButtons = new Map();
     const pageToSection = new Map();
@@ -544,14 +577,15 @@
     const imageCache = new Map();
     let renderToken = 0;
 
-    const sectionStarts = [1, 6, 15, 26];
-    const sectionDefinitions = sectionStarts.map((start, index) => {
-      const nextStart = sectionStarts[index + 1];
+    const sectionDefinitions = deck.sections.map((section, index) => {
+      const nextSection = deck.sections[index + 1];
+      const start = section.start;
+      const nextStart = nextSection?.start;
       const end = nextStart ? nextStart - 1 : totalPages;
       const id = String(index + 1).padStart(2, "0");
       return {
         id,
-        title: `Section ${id}`,
+        title: section.title,
         start,
         end
       };
@@ -571,11 +605,11 @@
     }
 
     function preloadPage(page) {
-      if (page < 1 || page > totalPages) {
+      if (!Number.isInteger(page) || page < 1 || page > totalPages) {
         return Promise.resolve("");
       }
 
-      const fileName = `Media/page-${pad(page)}.png`;
+      const fileName = getPageFileName(page);
       if (imageCache.has(fileName)) {
         return imageCache.get(fileName);
       }
@@ -660,7 +694,7 @@
           thumb.className = "toc-thumb";
 
           const image = document.createElement("img");
-          image.src = `Media/page-${pad(page)}.png`;
+          image.src = getPageFileName(page);
           image.alt = `Page ${page} preview`;
           image.loading = "lazy";
 
@@ -723,7 +757,7 @@
       const safePage = getSafePage(page);
       state.page = safePage;
       const currentToken = ++renderToken;
-      const fileName = `Media/page-${pad(safePage)}.png`;
+      const fileName = getPageFileName(safePage);
       const visibleIndex = getVisibleIndex(safePage);
 
       await preloadPage(safePage);

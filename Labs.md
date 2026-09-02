@@ -112,7 +112,7 @@ https://www.kcaca.or.kr/inform/data.html
 
 ### **Tips & Tricks**
 - Chat 에서 Excel Agent에서도 동일 프롬프트 보여주기
-> ![alt text](image.png)
+> ![alt text](Media/july.png)
 
 ## 3. Hands-on Word
 

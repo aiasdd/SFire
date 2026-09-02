@@ -35,19 +35,30 @@
       overflow: hidden;
     }
 
-    .home {
+    .home-stack {
       width: min(1240px, 100%);
+      max-height: calc(100vh - 20px);
+      display: grid;
+      gap: 16px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .home {
+      width: 100%;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 20px;
       backdrop-filter: blur(8px);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
       padding: clamp(20px, 4vw, 40px);
-      max-height: calc(100vh - 20px);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
       gap: 16px;
+    }
+
+    .home-secondary {
+      padding: clamp(16px, 3vw, 28px);
     }
 
     h1 {
@@ -247,67 +258,146 @@
       font-size: 0.88rem;
       margin: 0;
     }
+
+    .featured-slides {
+      flex: 0 0 auto;
+      width: 100%;
+      min-height: 112px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      background: rgba(15, 23, 42, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .featured-slides h2 {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 1.15rem;
+    }
+
+    .featured-slides-link {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 128px;
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 700;
+      transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .featured-slides-link:hover,
+    .featured-slides-link:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      background: rgba(34, 211, 238, 0.12);
+      outline: none;
+    }
+
+    @media (max-width: 560px) {
+      .featured-slides {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .featured-slides-link {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <main class="home">
-    <!--
-    <h1>Welcome</h1>
-    <p>아래 항목을 클릭하면 각각의 페이지로 이동합니다.</p>
-    --
-    -->
+  <div class="home-stack">
+    <main class="home">
+      <!--
+      <h1>Welcome</h1>
+      <p>아래 항목을 클릭하면 각각의 페이지로 이동합니다.</p>
+      --
+      -->
 
-    <section class="links" aria-label="Navigation Links">
-      <div class="card-link" role="group" aria-label="Labs 문서 링크">
-        <strong>Labs</strong>
+      <section class="links" aria-label="Navigation Links">
+        <div class="card-link" role="group" aria-label="Labs 문서 링크">
+          <strong>Labs</strong>
 
-        <ul class="card-link-list" aria-label="Labs markdown files">
-          <li><a href="labs.html?doc=00.WorkIQ.md">00.WorkIQ</a></li>
-          <li><a href="labs.html?doc=01.Chat.md">01.Chat</a></li>
-          <li><a href="labs.html?doc=02.Word.md">02.Word</a></li>
-          <li><a href="labs.html?doc=03.Excel.md">03.Excel</a></li>
-          <li><a href="labs.html?doc=04.PPT.md">04.PPT</a></li>
-          <li><a href="labs.html?doc=05.AgentBuilder.md">05.AgentBuilder</a></li>
-        </ul>
-      </div>
-
-      <a class="card-link" href="slides.html">
-        <strong>Slides</strong>
-      </a>
-    </section>
-
-    <section class="file-panels" aria-label="File Links">
-      <article class="file-panel" aria-labelledby="labfiles-title">
-        <button
-          id="labfiles-title"
-          class="file-panel-toggle"
-          type="button"
-          aria-expanded="false"
-          aria-controls="labfiles-body"
-        >
-          Labfiles
-        </button>
-        <div id="labfiles-body" class="file-panel-body" hidden>
-          <ul id="labfiles-list" class="file-list"></ul>
+          <ul class="card-link-list" aria-label="Labs markdown files">
+            <li><a href="labs.html?doc=00.WorkIQ.md">00.WorkIQ</a></li>
+            <li><a href="labs.html?doc=01.Chat.md">01.Chat</a></li>
+            <li><a href="labs.html?doc=02.Word.md">02.Word</a></li>
+            <li><a href="labs.html?doc=03.Excel.md">03.Excel</a></li>
+            <li><a href="labs.html?doc=04.PPT.md">04.PPT</a></li>
+            <li><a href="labs.html?doc=05.AgentBuilder.md">05.AgentBuilder</a></li>
+          </ul>
         </div>
-      </article>
 
-      <article class="file-panel" aria-labelledby="clips-title">
-        <button
-          id="clips-title"
-          class="file-panel-toggle"
-          type="button"
-          aria-expanded="false"
-          aria-controls="clips-body"
-        >
-          Clips
-        </button>
-        <div id="clips-body" class="file-panel-body" hidden>
-          <ul id="clips-list" class="file-list"></ul>
+        <a class="card-link" href="slides.html">
+          <strong>Slides</strong>
+        </a>
+      </section>
+
+      <section class="file-panels" aria-label="File Links">
+        <article class="file-panel" aria-labelledby="labfiles-title">
+          <button
+            id="labfiles-title"
+            class="file-panel-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="labfiles-body"
+          >
+            Labfiles
+          </button>
+          <div id="labfiles-body" class="file-panel-body" hidden>
+            <ul id="labfiles-list" class="file-list"></ul>
+          </div>
+        </article>
+
+        <article class="file-panel" aria-labelledby="clips-title">
+          <button
+            id="clips-title"
+            class="file-panel-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="clips-body"
+          >
+            Clips
+          </button>
+          <div id="clips-body" class="file-panel-body" hidden>
+            <ul id="clips-list" class="file-list"></ul>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <main class="home home-secondary">
+      <section class="links" aria-label="2026.09 심화 과정 Navigation Links">
+        <div class="card-link" role="group" aria-label="2026.09 심화 과정 Labs 문서 링크">
+          <strong>Labs</strong>
+
+          <ul class="card-link-list" aria-label="2026.09 심화 과정 Labs markdown files">
+            <li><a href="labs.html?doc=11.Excel.md">11.Excel</a></li>
+            <li><a href="labs.html?doc=12.Word.md">12.Word</a></li>
+            <li><a href="labs.html?doc=13.PPT.md">13.PPT</a></li>
+            <li><a href="labs.html?doc=14.Pages.md">14.Pages</a></li>
+            <li><a href="labs.html?doc=15.FrontierAgents.md">15.FrontierAgents</a></li>
+            <li><a href="labs.html?doc=16.AgentBuilder.md">16.AgentBuilder</a></li>
+          </ul>
         </div>
-      </article>
-    </section>
-  </main>
+
+        <a class="card-link" href="slides.html?doc=202609v_SFire.md">
+          <strong>Slides</strong>
+        </a>
+      </section>
+    </main>
+  </div>
 
   <script>
     const filesByFolder = {
