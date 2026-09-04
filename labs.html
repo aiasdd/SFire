@@ -32,7 +32,7 @@
     }
 
     .page {
-      --toc-width: 200px;
+      --toc-width: 100px;
       width: min(1860px, 100%);
       margin: 0 auto;
       padding: 20px;
@@ -131,14 +131,21 @@
 
     .toc-toggle-btn,
     .toc-open-btn {
+      display: inline-flex;
+      flex: 0 0 28px;
+      width: 28px;
+      height: 28px;
       border: 1px solid var(--line);
       background: #ffffff;
       color: var(--text);
       border-radius: 8px;
-      font-size: 0.78rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      padding: 5px 8px;
+      line-height: 1;
+      padding: 0;
       cursor: pointer;
+      align-items: center;
+      justify-content: center;
     }
 
     .toc-toggle-btn {
@@ -685,12 +692,12 @@
     <aside class="toc" aria-label="문서 목차">
       <div class="toc-header">
         <h2 id="toc-title" class="toc-title" role="button" tabindex="0" aria-label="컨텐츠 최상단으로 이동">목차</h2>
-        <button id="toc-toggle-btn" class="toc-toggle-btn" type="button" aria-label="목차 접기">접기</button>
+        <button id="toc-toggle-btn" class="toc-toggle-btn" type="button" aria-label="목차 접기" aria-expanded="true">+</button>
       </div>
       <ol id="toc-list"></ol>
     </aside>
     <div id="toc-resizer" class="toc-resizer" role="separator" aria-orientation="vertical" aria-label="목차 너비 조절"></div>
-    <button id="toc-open-btn" class="toc-open-btn" type="button" aria-label="목차 열기">목차</button>
+    <button id="toc-open-btn" class="toc-open-btn" type="button" aria-label="목차 열기">+</button>
 
     <main class="content">
       <div class="topbar">
@@ -1046,7 +1053,7 @@
       }
 
       syncToggleAllButton();
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      target.scrollIntoView({ behavior: "auto", block: "start" });
 
       if (history.pushState) {
         history.pushState(null, "", `#${id}`);
@@ -1087,7 +1094,7 @@
         page.classList.toggle("toc-collapsed", collapsed);
         openBtn.classList.toggle("is-visible", collapsed);
         toggleBtn.setAttribute("aria-label", collapsed ? "목차 열기" : "목차 접기");
-        toggleBtn.textContent = collapsed ? "열기" : "접기";
+        toggleBtn.setAttribute("aria-expanded", String(!collapsed));
       };
 
       toggleBtn.addEventListener("click", () => {
@@ -1099,7 +1106,7 @@
         setCollapsed(false);
       });
 
-      setCollapsed(true);
+      setCollapsed(false);
     }
 
     function setupTocTitleJump() {
@@ -1135,7 +1142,7 @@
       let activePointerId = null;
 
       const clampWidth = (rawWidth) => {
-        const min = 180;
+        const min = 100;
         const max = Math.min(520, Math.max(260, Math.floor(window.innerWidth * 0.5)));
         return Math.max(min, Math.min(max, rawWidth));
       };
